@@ -15,17 +15,20 @@ void main(){
      'Juan': 30
     };
 
-  
+  /*
   print(edades);
   int? valorAna = edades['Ana'];
   print(valorAna);
-
+  numeros.forEach((n) => print(n));
+  */
+  
   int totalEdad = sumaEdad(edades);
 
   print(totalEdad);
   
 }
 
+  // función que sume todas las edades en el mapa
   int sumaEdad(Map<String, int> mapa){
     int suma = 0;
     mapa.forEach((nombre, edad){
