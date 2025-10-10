@@ -15,16 +15,14 @@ void main(){
      'Juan': 30
     };
 
-  /*
-  print(edades);
-  int? valorAna = edades['Ana'];
-  print(valorAna);
-  numeros.forEach((n) => print(n));
-  */
   
   int totalEdad = sumaEdad(edades);
-
-  print(totalEdad);
+  int nMaximo =numeroMaximo(edades);
+  int nMinima =numeroMinima(edades);
+  
+  print("Suma todas las edades:  $totalEdad");
+  print("La edad máxima: $nMaximo");
+  print("la edad mínima: $nMinima");
   
 }
 
@@ -38,4 +36,25 @@ void main(){
   }
 
 
+//función que determine cuál es la edad máxima
+  int numeroMaximo(Map<String, int> mapa){
+    int Maxima = mapa.values.first;
+    mapa.forEach((nombre, edad){
+      
+      if(Maxima < edad){
+        Maxima = edad;
+      }
+    });
+    return Maxima;
+  }
 
+//función que determine cuál es la edad mínima
+  int numeroMinima(Map<String, int> mapa){
+    int Minima = mapa.values.first;
+    mapa.forEach((nombre, edad){
+      if(Minima > edad){
+        Minima = edad;
+      }
+    });
+    return Minima;
+  }
