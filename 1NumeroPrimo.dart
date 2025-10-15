@@ -1,16 +1,25 @@
 import 'dart:io';
 
+
+// Genera una lista de números primos hasta el que el usuario introduzca por consola.
 void main(){
 
+
+ //Introducir datos
   print("Introduce un numero entero para sale lista de numero primo");
   String? entrada = stdin.readLineSync();
 
 
+  //Comprobar DATO  
   int numeroMaximo = int.parse(entrada!);
-  int numeroPrueba = 1;
   
-  while(numeroPrueba <= numeroMaximo){
+  
 
+  //Bucle hasta el número
+  int numeroPrueba = 1;
+  while(numeroPrueba <= numeroMaximo){
+  
+  //Calcular primo o no cada número
       if(numeroPrueba == 1){
         print("$numeroPrueba no es primo");
       }
