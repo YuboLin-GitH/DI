@@ -9,10 +9,15 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
+        appBar: AppBar(title: Text('Botón flotante')),
+        body: const Center(child: Text('Hello World!')),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            print('Hola munto');
+          },
+          child: const Icon(Icons.add),
         ),
       ),
     );
