@@ -9,10 +9,28 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: Scaffold(
         body: Center(
-          child: Text('Hello World!'),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.white,
+              
+
+            ),
+            margin: EdgeInsets.all(5),
+            padding: EdgeInsets.all(5),
+            child: Card(
+              color: Colors.cyanAccent,
+              child: Container(
+                  padding: EdgeInsets.all(15),
+                  child: Text('Hola ahahahahaha'),
+              ),
+              
+            ),
+          ),
+            
         ),
       ),
     );

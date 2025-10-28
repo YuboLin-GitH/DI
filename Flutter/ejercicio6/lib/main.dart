@@ -17,23 +17,16 @@ class MainApp extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text('Texto superior', style: TextStyle(fontSize: 24)),
-              SizedBox(height: 20),
+              Text('Texto inferior', style: TextStyle(fontSize: 18)),
+              SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Text('Texto A'),
-                  Text('Texto B'),
+                  ElevatedButton(onPressed: () {}, child: Text('Botón1')),
+                  SizedBox(height: 20),
+                  ElevatedButton(onPressed: () {}, child: Text('Botón2')),
                 ],
               ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: (){},
-                child: Text('Botón1'),
-              ),
-              ElevatedButton(
-                onPressed: (){},
-                child: Text('Botón2'),
-              )
             ],
           ),
         ),
