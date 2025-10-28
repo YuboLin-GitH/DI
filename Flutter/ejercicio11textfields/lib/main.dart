@@ -9,10 +9,40 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
+        body: Form(
+          child: Column(
+            children: [
+              TextField(
+                decoration: InputDecoration(labelText: 'Introduce tu nombre'),
+                onChanged: (text) {
+                  print('Texto introducido: $text');
+                },
+              ),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Introduce tu contraseña',
+                ),
+                onChanged: (password) {
+                  print('Texto introducido: $password');
+                },
+                obscureText: true,
+              ),
+              TextField(
+                decoration: InputDecoration(labelText: 'Introduce tu email'),
+                onChanged: (email) {
+                  print('Texto introducido: $email');
+                },
+                //validator:(value){
+                 // if(value?.isEmpty ?? true){
+                  //  return 'El email no puede estar vacío';
+                 // }
+                //}
+              ),
+              ElevatedButton(onPressed: (){}, child: Text('Enviar'))
+            ],
+          ),
         ),
       ),
     );
