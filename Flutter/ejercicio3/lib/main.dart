@@ -21,6 +21,7 @@ class _MainApp extends State<MainApp> {
   @override
    Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false, // Para quitar la marca de debug
       home: Scaffold(
         appBar: AppBar(title: Text('Contador simple')),
         body: Center(

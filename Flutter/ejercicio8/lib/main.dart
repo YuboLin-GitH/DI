@@ -10,6 +10,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false, // Para quitar la marca de debug
       home: Scaffold(
         appBar: AppBar(title: const Text("Cartas")),
         backgroundColor: Colors.grey[200],
