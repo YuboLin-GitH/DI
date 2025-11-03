@@ -11,6 +11,10 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false, // Para quitar la marca de debug
+      theme: ThemeData(  // tema oscuro
+      primarySwatch: Colors.blue,
+      brightness: Brightness.dark,
+      ),
       home: Scaffold(
         body: Center(
           child: Container(
