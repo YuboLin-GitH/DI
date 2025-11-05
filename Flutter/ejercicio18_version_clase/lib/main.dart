@@ -17,14 +17,10 @@ class MainApp extends StatelessWidget {
 }
 
 
-
-
 class listaElementos extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => listaElementosState();
 }
-
-
 
 
 class listaElementosState extends State<listaElementos> {

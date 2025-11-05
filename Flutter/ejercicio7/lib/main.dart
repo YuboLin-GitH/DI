@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+
+/*
+7. Diseña una tarjeta dentro de un Container con un color blanco de fondo, 
+bordes y relleno personalizado. Utiliza las propiedades de margin, 
+padding y borderRadius de Container para realizarlo.
+ */
 void main() {
   runApp(const MainApp());
 }
@@ -20,7 +26,7 @@ class MainApp extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: Colors.white,
+              color: Colors.orange,
               
 
             ),

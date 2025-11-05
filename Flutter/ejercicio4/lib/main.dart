@@ -29,7 +29,7 @@ class _MainApp extends State<MainApp> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('$_texto'),
+              Text(_texto),
               ElevatedButton(
                 onPressed: _incrementCounter,
                 child: Text('Botón +1'),

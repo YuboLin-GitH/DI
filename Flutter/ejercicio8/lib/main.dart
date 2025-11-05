@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+/*
+8. Crea una pantalla con varias tarjetas (Card) que tengan un título 
+y una imagen. Aplica “padding” y “margin” a cada tarjeta,
+ y usa “Box Decoration” para añadir bordes redondeados y una sombra.
+ */
 void main() {
   runApp(const MainApp());
 }

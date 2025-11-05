@@ -15,6 +15,8 @@ class MainApp extends StatelessWidget {
         body: ListView(
           children: [
             Container(
+              padding: EdgeInsets.all(5),
+              margin: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 boxShadow: [BoxShadow(
                   color: Colors.black,

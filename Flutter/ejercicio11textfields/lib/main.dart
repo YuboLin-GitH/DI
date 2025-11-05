@@ -9,16 +9,23 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
+
     return MaterialApp(
       debugShowCheckedModeBanner: false, // Para quitar la marca de debug
       home: Scaffold(
+        appBar: AppBar(title: Text("Formulario de Registro"),),
         body: Form(
+          key: _formKey,
           child: Column(
             children: [
-              TextField(
+              TextFormField(
                 decoration: InputDecoration(labelText: 'Introduce tu nombre'),
-                onChanged: (text) {
-                  print('Texto introducido: $text');
+                validator: (value) { 
+                    if (value?.isEmpty ?? true) {
+                      return 'El nombre no puede estar vacío'; 
+                    }
+                    return null;
                 },
               ),
               TextField(
@@ -30,18 +37,25 @@ class MainApp extends StatelessWidget {
                 },
                 obscureText: true,
               ),
-              TextField(
+              TextFormField(
                 decoration: InputDecoration(labelText: 'Introduce tu email'),
-                onChanged: (email) {
-                  print('Texto introducido: $email');
-                },
-                //validator:(value){
-                 // if(value?.isEmpty ?? true){
-                  //  return 'El email no puede estar vacío';
-                 // }
-                //}
+                keyboardType: TextInputType.emailAddress,
+                 validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'El email no puede estar vacío';
+                    }
+                    if (!value!.contains('@')) {
+                      return 'El email debe contener @';
+                    }
+                    return null;
+                  }, 
               ),
-              ElevatedButton(onPressed: (){}, child: Text('Enviar'))
+              ElevatedButton(onPressed: (){
+                if (_formKey.currentState!.validate()) {
+                   
+                      print('✅ Formulario enviado correctamente!');
+                    }
+              }, child: Text('Enviar'))
             ],
           ),
         ),
