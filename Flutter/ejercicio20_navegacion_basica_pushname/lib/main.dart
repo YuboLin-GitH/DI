@@ -10,38 +10,34 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: {'/': (context) => PantallaA(), '/b': (context) => PantallaB(),},
       debugShowCheckedModeBanner: false,
-      home: PantallaA(),
     );
   }
 }
 
-class PantallaA extends StatelessWidget{
+class PantallaA extends StatelessWidget {
   const PantallaA({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Pantalla A"),),
+      appBar: AppBar(title: Text("Pantalla A")),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children:
-          [
-            Text("PantallaA"),
-            FloatingActionButton(onPressed:(){ 
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const PantallaB()),
-          );
-        }, child: Text("B")),
-          ]
-         
+        children: [
+          Text("PantallaA"),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/b');
+            },
+            child: Text("B"),
+          ),
+        ],
       ),
     );
   }
-
 }
-
 
 class PantallaB extends StatelessWidget {
   const PantallaB({super.key});
