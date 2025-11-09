@@ -16,6 +16,7 @@ class MainApp extends StatelessWidget {
     );
   }
 }
+
 class PantallaA extends StatefulWidget{
  
   @override
