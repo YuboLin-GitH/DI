@@ -41,7 +41,7 @@ class PantallaALogin extends State<PantallaA>{
           [
            TextField(
               controller: nombreController,
-              decoration: InputDecoration(labelText: "Usuario"),
+              decoration: InputDecoration(labelText: "Usuariox"),
             ),
             TextField(
               controller: passwordController,
