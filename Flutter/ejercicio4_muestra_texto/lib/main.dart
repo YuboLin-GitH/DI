@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+
+/* EJERCICIO 4: Crea una interfaz que muestre un texto dinámico
+que cambie al presionar un botón (dentro de build(), muestra un texto y
+un botón que actualice el texto cada vez que se pulse)*/
 void main() {
   runApp(MainApp());
 }

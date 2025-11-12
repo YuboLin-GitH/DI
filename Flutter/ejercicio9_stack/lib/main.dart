@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+/*EJERCICIO 9: Crea una interfaz de perfil donde uses Stack para
+superponer una imagen de fondo con un avatar redondeado y un botón
+de edición sobre la imagen.
+Usa los widgets Stack, Positioned, Image, CircleAvatar y Button*/
+
 void main() {
   runApp(const MainApp());
 }
@@ -37,6 +42,24 @@ class MainApp extends StatelessWidget {
                 icon: Icon(Icons.edit, size: 32, color: Colors.blue),
                 onPressed: () {},
                 tooltip: 'editar',
+              ),
+            ),
+             Positioned(
+              child: Container(
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle, // CONTENEDOR CIRCULAR
+                  border: Border.all(
+                    color: Colors.black, // COLOR BORDE
+                    width: 2, // GROSOR DEL BORDE
+                  )
+                ),
+                child: CircleAvatar(
+                  radius: 100, // Ajusta el radio para que coincida con el tamaño deseado
+                  backgroundColor: Colors.black, // El color de fondo del círculo
+                  backgroundImage: NetworkImage('https://i.pinimg.com/236x/70/85/54/7085548f3d0372a08aea0291ddcee895.jpg'), // Imagen de fondo
+                ),
               ),
             ),
           ],

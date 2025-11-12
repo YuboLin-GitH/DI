@@ -28,6 +28,13 @@ class MainApp extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               color: Colors.orange,
               
+              boxShadow: const [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 10,
+                offset: Offset(0, 5), // SOMBRA HACIA ABAJO
+              ),
+            ],
 
             ),
             margin: EdgeInsets.all(5),

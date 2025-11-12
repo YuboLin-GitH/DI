@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/* EJERCICIO 11: Crea un formulario de registro que tenga TextFields para nombre, correo
+electrónico y contraseña. Usa el widget Form para gestionar la validación, y
+añade un botón para enviar el formulario */
+
 void main() {
   runApp(const MainApp());
 }

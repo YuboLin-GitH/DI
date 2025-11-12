@@ -98,7 +98,7 @@ class _PerfilPantallaState extends State<PerfilPantalla> {
                   child: Text("Guardar"),
                 ),
                 SizedBox(height: 12),
-                // 实时显示更新的内容
+              
                 Text(
                   descripcion,
                   style: TextStyle(fontSize: 16, color: Colors.grey[700]),
