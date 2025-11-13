@@ -67,3 +67,20 @@ class MainApp extends StatelessWidget {
     );
   }
 }
+
+
+class _pantalla2State extends StatefulWidget {
+  const _pantalla2State({super.key});
+
+  @override
+  State<_pantalla2State> createState() => __pantalla2StateState();
+}
+
+class __pantalla2StateState extends State<_pantalla2State> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
+
