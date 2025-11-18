@@ -4,6 +4,9 @@ void main() {
   runApp(const MyApp());
 }
 
+
+
+/// 1. Página principal del formulario (gestiona validación y datos)
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -11,46 +14,52 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const FormularioPrincipal(), // 初始显示表单页面
+      home: const FormularioPrincipal(), // Página inicial: el formulario
     );
   }
 }
 
-// 1. 表单主页面（核心：管理表单验证和数据）
+/// 2. Formulario principal con validaciones y gestión de datos
 class FormularioPrincipal extends StatefulWidget {
   const FormularioPrincipal({super.key});
 
   @override
-  State<FormularioPrincipal> createState() => _FormularioPrincipalState();
+  State<FormularioPrincipal> createState() => FormularioPrincipalState();
 }
 
-class _FormularioPrincipalState extends State<FormularioPrincipal> {
-  // 表单唯一标识（必须有，用于触发验证/重置）
-  final _formKey = GlobalKey<FormState>();
+class FormularioPrincipalState extends State<FormularioPrincipal> {
+  /// Clave única para el formulario (necesaria para validar y resetear)
+  final formKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
-  // 存储表单数据（后续传给下一页）
+  // Almacena los datos del formulario (se pasarán a la siguiente pantalla)
   String _email = '';
   String _login = '';
   String _contrasena = '';
   String _repetirContrasena = '';
-  String _terminos = 'No Aceptar Términos'; // 下拉框默认值
+  String _terminos = 'No Aceptar Términos'; // Valor por defecto del desplegable
 
-  // 2. 重置表单（清空所有输入和错误提示）
-  void _borrarFormulario() {
-    _formKey.currentState!.reset(); // 重置表单
+  /// 3. Limpia todos los campos y errores del formulario
+  void borrarFormulario() {
+    formKey.currentState!.reset(); // Resetea el formulario
     _passwordController.clear();
     setState(() {
-      _terminos = 'No Aceptar Términos'; // 下拉框恢复默认值
+      _terminos = 'No Aceptar Términos'; // Restaura valor por defecto
     });
   }
 
-  // 3. 提交表单（验证通过后跳转到结果页）
-  void _enviarFormulario() {
-    if (_formKey.currentState!.validate()) {
-      // 验证通过：保存表单输入的内容
-      _formKey.currentState!.save();
+  /// 4. Envía el formulario si todo es válido y navega a la pantalla de resultado
+  /// ```dart
+  ///  this.code()
+  ///   .looks
+  ///   .better();
+  /// ```
+  /// ssdasdsa
+  void enviarFormulario() {
+    if (formKey.currentState!.validate()) {
+      /// Si pasa las validaciones, guarda los datos
+      formKey.currentState!.save();
       
-      // 跳转到结果页，把表单数据传过去
+      /// Navega a la pantalla de resultado y pasa los datos
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -65,52 +74,51 @@ class _FormularioPrincipalState extends State<FormularioPrincipal> {
     }
   }
 
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Formulario Simple')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0), // 表单和屏幕边缘留间距
+        padding: const EdgeInsets.all(16.0), // Espacio respecto a los bordes
         child: Form(
-          key: _formKey, // 绑定表单标识
-          child: ListView( // 用ListView避免键盘遮挡
+          key: formKey, // Relaciona el formulario con la clave
+          child: ListView( // ListView evita que el teclado tape los campos
             children: [
-              // 4. 邮箱输入框（验证格式）
+              /// 5. Campo para Email (valida formato)
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Email'),
-                keyboardType: TextInputType.emailAddress, // 邮箱专用键盘
-                // 验证规则：非空 + 包含@
+                keyboardType: TextInputType.emailAddress, // Teclado para email
+                /// Reglas de validación: no vacío + contiene @
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Email no puede estar vacío';
                   }
-                  if (!value.contains('@')) { // 简单验证格式
+                  if (!value.contains('@')) { // Validación simple
                     return 'Email inválido (falta @)';
                   }
-                  return null; // 验证通过
+                  return null; // Válido
                 },
-                // 保存输入的邮箱
                 onSaved: (value) {
                   _email = value!;
                 },
               ),
 
-              const SizedBox(height: 16), // 输入框之间留间距
+              const SizedBox(height: 16), // Espacio entre campos
 
-              // 5. Login输入框（不能是"admin"）
+              /// 6. Campo Login (no puede ser "admin")
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Login'),
-                // 验证规则：非空 + 不是"admin"
+                // Reglas: no vacío + distinto a admin
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Login no puede estar vacío';
                   }
-                  if (value == 'admin') { // 禁止用"admin"
+                  if (value == 'admin') {
                     return 'Login no puede ser "admin"';
                   }
                   return null;
                 },
-                // 保存输入的Login
                 onSaved: (value) {
                   _login = value!;
                 },
@@ -118,25 +126,23 @@ class _FormularioPrincipalState extends State<FormularioPrincipal> {
 
               const SizedBox(height: 16),
 
-              // 6. 密码输入框（8位+1个符号）
+              /// 7. Campo Contraseña (mínimo 8 caracteres y 1 símbolo)
               TextFormField(
                 controller: _passwordController,
                 decoration: const InputDecoration(labelText: 'Contraseña'),
-                obscureText: true, // 隐藏密码
-                // 验证规则：非空 + 长度>8 + 包含符号
+                obscureText: true, // Oculta la contraseña
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Contraseña no puede estar vacía';
                   }
-                  if (value.length <= 8) { // 必须超过8位
-                    return 'Contraseña需>8个字符';
+                  if (value.length <= 8) { // Debe tener más de 8 caracteres
+                    return 'Contraseña debe tener más de 8 caracteres';
                   }
-                  if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) { // 验证符号
-                    return 'Contraseña需包含1个符号（如!@#）';
+                  if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
+                    return 'Contraseña debe tener al menos un símbolo (ej: !@#)';
                   }
                   return null;
                 },
-                // 保存输入的密码
                 onSaved: (value) {
                   _contrasena = value!;
                 },
@@ -144,23 +150,19 @@ class _FormularioPrincipalState extends State<FormularioPrincipal> {
 
               const SizedBox(height: 16),
 
-              // 7. 重复密码输入框（和密码一致）
+              /// 8. Campo Repetir Contraseña (debe coincidir)
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Repetir Contraseña'),
                 obscureText: true,
-                // 验证规则：非空 + 和密码一致
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Repite la contraseña';
                   }
-                  // 获取当前密码输入框的值（对比一致性）
-                
                   if (value != _passwordController.text) {
-                    return 'Contraseñas no coinciden';
+                    return 'Las contraseñas no coinciden';
                   }
                   return null;
                 },
-                // 保存重复的密码
                 onSaved: (value) {
                   _repetirContrasena = value!;
                 },
@@ -168,11 +170,10 @@ class _FormularioPrincipalState extends State<FormularioPrincipal> {
 
               const SizedBox(height: 16),
 
-              // 8. 下拉框（选择接受/不接受条款）
+              /// 9. Desplegable para aceptar términos
               DropdownButtonFormField(
-                value: _terminos, // 默认选中值
+                value: _terminos, // Valor actual seleccionado
                 decoration: const InputDecoration(labelText: 'Términos'),
-                // 下拉选项
                 items: const [
                   DropdownMenuItem(
                     value: 'Aceptar Términos',
@@ -183,13 +184,11 @@ class _FormularioPrincipalState extends State<FormularioPrincipal> {
                     child: Text('No Aceptar Términos'),
                   ),
                 ],
-                // 选择时更新值
                 onChanged: (value) {
                   setState(() {
                     _terminos = value!;
                   });
                 },
-                // 验证规则：必须接受条款
                 validator: (value) {
                   if (value == 'No Aceptar Términos') {
                     return 'Debes aceptar los términos';
@@ -200,19 +199,19 @@ class _FormularioPrincipalState extends State<FormularioPrincipal> {
 
               const SizedBox(height: 24),
 
-              // 9. 按钮组（重置 + 提交）
+              /// 10. Botones para limpiar y enviar el formulario
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // 重置按钮
+                  /// Botón para limpiar
                   ElevatedButton(
-                    onPressed: _borrarFormulario,
+                    onPressed: borrarFormulario,
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
                     child: const Text('Borrar'),
                   ),
-                  // 提交按钮
+                  /// Botón para enviar
                   ElevatedButton(
-                    onPressed: _enviarFormulario,
+                    onPressed: enviarFormulario,
                     child: const Text('Enviar'),
                   ),
                 ],
@@ -225,15 +224,15 @@ class _FormularioPrincipalState extends State<FormularioPrincipal> {
   }
 }
 
-// 10. 结果页面（接收并显示表单数据）
+/// 11. Pantalla para mostrar los datos enviados
 class PantallaResultado extends StatelessWidget {
-  // 接收从表单页传过来的数据
+  // Recibe datos del formulario
   final String email;
   final String login;
   final String contrasena;
   final String terminos;
 
-  // 必须传入所有数据
+  /// Se deben recibir todos los datos
   const PantallaResultado({
     super.key,
     required this.email,
@@ -250,10 +249,10 @@ class PantallaResultado extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            // 显示每一项数据
+            // Muestra cada dato recibido
             _buildDatos('Email', email),
             _buildDatos('Login', login),
-            _buildDatos('Contraseña', '******'), // 密码隐藏显示
+            _buildDatos('Contraseña', '******'), // La contraseña no se muestra
             _buildDatos('Términos', terminos),
           ],
         ),
@@ -261,7 +260,7 @@ class PantallaResultado extends StatelessWidget {
     );
   }
 
-  // 复用组件：显示"标题+数据"
+  /// Componente reutilizable para mostrar "título: valor"
   Widget _buildDatos(String titulo, String valor) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),

@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
 // Pantalla principal: incluye TabBar (pestañas superiores) y TabBarView (contenido)
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
