@@ -1,5 +1,3 @@
-import 'dart:nativewrappers/_internal/vm/lib/math_patch.dart';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -35,22 +33,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  
   int _counter = 0;
 
-  void _incrementCounter() async {
-    final prefs = await SharedPreferences.getInstance;
-    setState(() {
+  
 
-      _counter++;
-    });
-  }
-
-  Future<int> llerContador() async{
+  Future<int> leerContador() async{
     final prefs = await SharedPreferences.getInstance();
     int contador = prefs.getInt('contador')?? 0;
     return contador;
   }
+  
+  void _incrementCounter() async {
+      final prefs = await SharedPreferences.getInstance();
+      int contadorNuevo = await _counter + 1;
 
+      await prefs.setInt('contador', contadorNuevo);
+
+      setState(() {
+      _counter++;
+      });
+    }
 
   @override
   Widget build(BuildContext context) {
