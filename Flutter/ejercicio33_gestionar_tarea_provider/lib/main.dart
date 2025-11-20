@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (context) => CounterProvider(),
+      create: (context) => TaskProvider(),
       child: MyApp(),
     ),
   );
@@ -37,7 +37,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    final contador = context.watch<CounterProvider>().contador;
+    final contador = context.watch<TaskProvider>();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -45,30 +45,10 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: ListView(
-          children: [
-            Container(
-              padding: EdgeInsets.all(5),
-              margin: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black,
-                    blurRadius: 15,
-                    blurStyle: BlurStyle.outer,
-                  ),
-                ],
-                border: Border.all(color: Colors.red, width: 5),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: ListTile(
-                leading: Image.network("https://placehold.co/600x400.png"),
-                title: Text('Nombre'),
-                subtitle: Text('Precio'),
-                contentPadding: EdgeInsets.all(20),
-              ),
-            ),
-          ],
+        
+        child: Text(
+  "        context.watch<TaskProvider>().contador.toString();"
+          
         ),
       ),
 
@@ -76,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const TaskList()),
+            MaterialPageRoute(builder: (context) => const Formulario()),
           );
         },
         child: const Icon(Icons.add),
@@ -85,36 +65,46 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class CounterProvider extends ChangeNotifier {
-  int _contador = 0;
+class TaskProvider extends ChangeNotifier {
+  List<String> _tareas = [];
 
-  int get contador => _contador;
+  List<String> get contador => _tareas;
 
-  void incrementar() {
-    _contador++;
+  void anadirTareas(String tareas) {
+    _tareas.add(tareas);
     notifyListeners();
   }
 
-  void decrementar() {
-    _contador--;
-    notifyListeners();
-  }
+  
 }
 
-class TaskList extends StatefulWidget {
-  const TaskList({super.key});
+
+
+class Formulario extends StatefulWidget {
+  const Formulario({super.key});
 
   @override
-  State<TaskList> createState() => _TaskListState();
+  State<Formulario> createState() => _FormularioState();
 }
 
-class _TaskListState extends State<TaskList> {
+class _FormularioState extends State<Formulario> {
   @override
   Widget build(BuildContext context) {
+    TextEditingController? controller;
     return Scaffold(
-      appBar: AppBar(title: Text("AddTaskScreen")),
+      appBar: AppBar(title: Center(child: Text("AddTaskScreen"),)),
       body: Center(
-         
+         child: Form(child: Column(
+          children: [
+            TextField(
+              controller: controller,
+            ),
+            ElevatedButton(onPressed: (){
+              context.read<TaskProvider>().anadirTareas(controller!.text);
+              Navigator.pop(context);
+            }, child: Text("Enviar"))
+          ],
+         )),
       )
     );
   }
