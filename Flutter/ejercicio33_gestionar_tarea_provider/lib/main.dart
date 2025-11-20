@@ -45,39 +45,41 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$contador',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FloatingActionButton(
-                  onPressed: () {
-                    context.read<CounterProvider>().incrementar();
-                  },
-                  tooltip: 'Increment',
-                  child: const Icon(Icons.add),
-                ),
-                Padding(padding: EdgeInsetsGeometry.all(15)),
-
-                  FloatingActionButton(
-                  onPressed: () {
-                    context.read<CounterProvider>().decrementar();
-                  },
-                  tooltip: 'Increment',
-                  child: const Icon(Icons.remove),
-                ),
-              ],
-              
+        child: ListView(
+          children: [
+            Container(
+              padding: EdgeInsets.all(5),
+              margin: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black,
+                    blurRadius: 15,
+                    blurStyle: BlurStyle.outer,
+                  ),
+                ],
+                border: Border.all(color: Colors.red, width: 5),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: ListTile(
+                leading: Image.network("https://placehold.co/600x400.png"),
+                title: Text('Nombre'),
+                subtitle: Text('Precio'),
+                contentPadding: EdgeInsets.all(20),
+              ),
             ),
           ],
         ),
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const TaskList()),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -96,5 +98,24 @@ class CounterProvider extends ChangeNotifier {
   void decrementar() {
     _contador--;
     notifyListeners();
+  }
+}
+
+class TaskList extends StatefulWidget {
+  const TaskList({super.key});
+
+  @override
+  State<TaskList> createState() => _TaskListState();
+}
+
+class _TaskListState extends State<TaskList> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("AddTaskScreen")),
+      body: Center(
+         
+      )
+    );
   }
 }
