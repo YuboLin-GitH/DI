@@ -12,7 +12,6 @@ void main() {
 }
 
 
-
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -20,6 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (_, theme, __) => MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Notas',
         theme: ThemeData.light(),
         darkTheme: ThemeData.dark(),
