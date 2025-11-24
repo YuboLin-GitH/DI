@@ -38,15 +38,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
   
 
-  Future<int> leerContador() async{
+  Future<void> leerContador() async{
     final prefs = await SharedPreferences.getInstance();
     int contador = prefs.getInt('contador')?? 0;
-    return contador;
+    
+    setState(() {
+      _counter = contador;
+    });
   }
+
+  @override
+  void initState() {
+    super.initState();
+    leerContador();  
+  }
+
   
   void _incrementCounter() async {
       final prefs = await SharedPreferences.getInstance();
-      int contadorNuevo = await _counter + 1;
+      int contadorNuevo =  _counter + 1;
 
       await prefs.setInt('contador', contadorNuevo);
 

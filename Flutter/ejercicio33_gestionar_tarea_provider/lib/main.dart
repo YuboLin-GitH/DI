@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         
         child: Text(
-  "        context.watch<TaskProvider>().contador.toString();"
+         context.watch<TaskProvider>().contador.join(", ")
           
         ),
       ),
@@ -81,16 +81,20 @@ class TaskProvider extends ChangeNotifier {
 
 
 class Formulario extends StatefulWidget {
-  const Formulario({super.key});
+  
+ const Formulario({super.key});
 
   @override
   State<Formulario> createState() => _FormularioState();
 }
 
 class _FormularioState extends State<Formulario> {
+  final TextEditingController controller = TextEditingController();
+  //TextEditingController? controller;
+
   @override
   Widget build(BuildContext context) {
-    TextEditingController? controller;
+   
     return Scaffold(
       appBar: AppBar(title: Center(child: Text("AddTaskScreen"),)),
       body: Center(
@@ -100,7 +104,7 @@ class _FormularioState extends State<Formulario> {
               controller: controller,
             ),
             ElevatedButton(onPressed: (){
-              context.read<TaskProvider>().anadirTareas(controller!.text);
+              context.read<TaskProvider>().anadirTareas(controller.text);
               Navigator.pop(context);
             }, child: Text("Enviar"))
           ],
