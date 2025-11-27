@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -51,19 +52,33 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(
-        child: context.watch<NotesProvider>().nota.length == 0
-            ? Text('No hay notas')
-            : ListView.builder(
-                itemCount: context.watch<NotesProvider>().nota.length,
-                itemBuilder: (context, index) {
-                  final nota = context.watch<NotesProvider>().nota[index];
-                  return ListTile(
-                    title: Text(nota.titulo),
-                    subtitle: Text(nota.content),
-                  );
-                },
-              ),
+      body: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: 5,
+        ),
+        itemCount: context.watch<NotesProvider>().nota.length,
+        itemBuilder: (context, index) {
+          final nota = context.watch<NotesProvider>().nota[index];
+          return Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.red, width: 5),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  nota.titulo,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Text(nota.content),
+              ],
+            ),
+          );
+        },
       ),
 
       floatingActionButton: FloatingActionButton(
@@ -108,9 +123,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
             ElevatedButton(
               child: Text('Guardar'),
               onPressed: () {
-                if (titleCtrl.text.isEmpty) {
+                if(titleCtrl.text.isEmpty){
                   //error
-                }
+                } 
                 context.read<NotesProvider>().addNote(
                   Nota(titleCtrl.text, contentCtrl.text),
                 );
@@ -141,10 +156,11 @@ class NotesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeNote(Nota nota) {
+  void removeNote(Nota nota){
     _notas.remove(nota);
     notifyListeners();
   }
+
 }
 
 class SettingsScreen extends StatelessWidget {
