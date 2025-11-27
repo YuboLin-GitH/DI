@@ -53,7 +53,7 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Center(
         child: context.watch<NotesProvider>().nota.length == 0
-            ? Text('No hay notas')
+            ? Text('No hay notas !!')
             : ListView.builder(
                 itemCount: context.watch<NotesProvider>().nota.length,
                 itemBuilder: (context, index) {
