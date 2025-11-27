@@ -1,4 +1,4 @@
-name: ejemplo_nombre_edad_sqlite
+name: ejemplo_gestion_lista_tareas
 description: "A new Flutter project."
 publish_to: 'none'
 version: 0.1.0
@@ -9,7 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  sqflite_common_ffi: ^2.3.2
+  path: ^1.9.1
+  sqflite_common_ffi: ^2.3.6
 
 dev_dependencies:
   flutter_test:
