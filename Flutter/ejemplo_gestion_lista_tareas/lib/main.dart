@@ -44,7 +44,7 @@ class _TaskScreenState extends State<TaskScreen> {
     super.initState();
     _loadTasks();
   }
-
+ 
   Future<void> _loadTasks() async {
     final tasks = await widget.database.query('tasks');
     setState(() {

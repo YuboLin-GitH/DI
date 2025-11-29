@@ -7,18 +7,30 @@ void main() async {
   sqfliteFfiInit();
   final databaseFactory = databaseFactoryFfi;
   // Ruta para la base de datos
-  final dbPath = join(await databaseFactory.getDatabasesPath(), 'nombre.db');
+  final dbPath = join(await databaseFactory.getDatabasesPath(), 'tarea.db');
   final database = await databaseFactory.openDatabase(dbPath);
   // Crear tabla de tareas si no existe
   await database.execute('''
- CREATE TABLE IF NOT EXISTS nombre (
+ CREATE TABLE IF NOT EXISTS tarea (
  id INTEGER PRIMARY KEY AUTOINCREMENT,
- nombre TEXT NOT NULL,
- edad INTEGER NOT NULL DEFAULT 0
+ titulo TEXT NOT NULL,
+ descripcion TEXT NOT NULL
  )
  ''');
-  runApp(Formulario(database: database));
+  runApp(Tarea(database: database));
 }
+
+
+class Tarea extends StatelessWidget {
+  final Database database;
+  const Tarea({super.key, required this.database});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(home: Formulario(database: database),);
+  }
+}
+
 
 class Formulario extends StatefulWidget {
   final Database database;
@@ -64,8 +76,7 @@ class _FormularioState extends State<Formulario> {
 
     @override
     Widget build(BuildContext context) {
-      return MaterialApp(
-        home: Scaffold(
+      return  Scaffold(
           appBar: AppBar(title: Text("Formulario BD")),
           body: Column(
             children: [
@@ -103,7 +114,6 @@ class _FormularioState extends State<Formulario> {
               ),
             ],
           ),
-        ),
       );
     }
 

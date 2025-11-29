@@ -1,4 +1,4 @@
-name: ejemplo_nombre_edad_sqlite
+name: ejercicio34_agre_marca_filtra_eliminar_sqlite
 description: "A new Flutter project."
 publish_to: 'none'
 version: 0.1.0
@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   path: ^1.9.1
-  sqflite_common_ffi: ^2.3.2
+  sqflite_common_ffi: ^2.3.6
 
 dev_dependencies:
   flutter_test:
