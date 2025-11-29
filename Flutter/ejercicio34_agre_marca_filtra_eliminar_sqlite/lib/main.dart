@@ -14,12 +14,12 @@ void main() async {
  CREATE TABLE IF NOT EXISTS tarea (
  id INTEGER PRIMARY KEY AUTOINCREMENT,
  titulo TEXT NOT NULL,
- descripcion TEXT NOT NULL
+ descripcion TEXT NOT NULL,
+ completed INTEGER NOT NULL DEFAULT 0
  )
  ''');
   runApp(Tarea(database: database));
 }
-
 
 class Tarea extends StatelessWidget {
   final Database database;
@@ -27,10 +27,12 @@ class Tarea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: Formulario(database: database),);
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Formulario(database: database),
+    );
   }
 }
-
 
 class Formulario extends StatefulWidget {
   final Database database;
@@ -41,82 +43,169 @@ class Formulario extends StatefulWidget {
 }
 
 class _FormularioState extends State<Formulario> {
-    
-    List<Map<String, dynamic>> _nombre = [];
+  List<Map<String, dynamic>> _tarea = [];
 
-    final nombreController = TextEditingController();
-    final edadController = TextEditingController();
+  final tituloController = TextEditingController();
+  final descrController = TextEditingController();
+   String _filtroEstado = 'todo';
 
-    @override
-    void initState() {
-      super.initState();
-      _loadNombre();
-    }
-
-
-    Future<void> _loadNombre() async {
-        final nombre = await widget.database.query('nombre');
-        setState(() {
-          _nombre = nombre;
-        });
-      }
+  @override
+  void initState() {
+    super.initState();
+    _fitraTarea(_filtroEstado);
+  }
 
 
 
-    Future<void> _addNombre(String nombre, int edad) async {
-        await widget.database.insert('nombre', {'nombre': nombreController.text, 'edad': edad});
-        nombreController.clear();
-        edadController.clear();
-        _loadNombre();
-      }
+  Future<void> _addTarea(String titulo, String descripcion) async {
+    await widget.database.insert('tarea', {
+      'titulo': tituloController.text,
+      'descripcion': descrController.text,
+      'completed': 0,
+    });
+    tituloController.clear();
+    descrController.clear();
+    _fitraTarea(_filtroEstado);
+  }
 
+  Future<void> _fitraTarea(String estado) async {
+  List<Map<String, dynamic>> resultado;
 
+  if (estado == "pendiente") {
+    resultado = await widget.database.query(
+      'tarea',
+      where: 'completed = ?',
+      whereArgs: [0],
+    );
+  } else if (estado == "completada") {
+    resultado = await widget.database.query(
+      'tarea',
+      where: 'completed = ?',
+      whereArgs: [1],
+    );
+  } else {
+    resultado = await widget.database.query('tarea');
+  }
 
+  setState(() {
+    _filtroEstado = estado;  
+    _tarea = resultado;     
+  });
+}
 
+  Future<void> _toggleTarea(int id, int completed) async {
+    await widget.database.update(
+      'tarea',
+      {'completed': completed == 0 ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    _fitraTarea(_filtroEstado);
+  }
 
-    @override
-    Widget build(BuildContext context) {
-      return  Scaffold(
-          appBar: AppBar(title: Text("Formulario BD")),
-          body: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.all(8),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: nombreController,
-                      decoration: InputDecoration(labelText: "Nombre")),
-                    TextField(
-                      controller: edadController,
-                      decoration: InputDecoration(labelText: "edad"),
-                    ),
-                    ElevatedButton(onPressed: () => _addNombre(nombreController.text, int.parse(edadController.text))
-                      
-                    , child: Text("Subir")),
-                  ],
-                ),
-              ),
+  Future<void> _deleteTarea(int id) async {
+    await widget.database.delete('tarea', where: 'id = ?', whereArgs: [id]);
+    _fitraTarea(_filtroEstado);
+  }
 
-              Expanded(child: 
-                //TODO: para muestra nombre - edad
-                ListView.builder(
-                  itemCount: _nombre.length,
-                  itemBuilder: (context,index){
-                    final persona = _nombre[index];
-                    return ListTile(
-                      title: Text(
-                        "${persona['nombre']} - ${persona['edad']}",
-                        textAlign: TextAlign.center
-                        ), 
-                    );
-                  })
-              ),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Center(child: Text("Gestor de Tareas")),
+        actions: [
+          DropdownButton(
+            items: const [
+              DropdownMenuItem(value: 'todo', child: Text('Todos')),
+              DropdownMenuItem(value: 'pendiente', child: Text('Pendiente')),
+              DropdownMenuItem(value: 'completada', child: Text('Completada')),
             ],
+            onChanged: (value) {
+              setState(() {
+                _fitraTarea(value.toString());
+              });
+            },
+            value: _filtroEstado,
           ),
-      );
-    }
+        ],
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: tituloController,
+                    decoration: InputDecoration(labelText: "Título"),
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: TextField(
+                    controller: descrController,
+                    decoration: InputDecoration(labelText: "Descripción"),
+                  ),
+                ),
 
+                IconButton(
+                  onPressed: () =>
+                      _addTarea(tituloController.text, descrController.text),
+                  icon: Icon(Icons.add),
+                ),
+              ],
+            ),
+          ),
 
-
+          Expanded(
+            child: ListView.builder(
+              itemCount: _tarea.length,
+              itemBuilder: (context, index) {
+                final tareas = _tarea[index];
+                return ListTile(
+                  title: Text(
+                    tareas['titulo'],
+                    style: TextStyle(
+                      decoration: tareas['completed'] == 1
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                    ),
+                  ),
+                  subtitle: Text(tareas["descripcion"]),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      DropdownButton(
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'pendiente',
+                            child: Text('Pendiente'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'completada',
+                            child: Text('Completada'),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          _toggleTarea(tareas['id'], tareas['completed']);
+                        },
+                        value: tareas['completed'] == 1
+                            ? 'completada'
+                            : 'pendiente',
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () => _deleteTarea(tareas['id']),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
