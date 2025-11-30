@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   path: ^1.9.1
+  shared_preferences: ^2.5.3
   sqflite_common_ffi: ^2.3.6
 
 dev_dependencies:

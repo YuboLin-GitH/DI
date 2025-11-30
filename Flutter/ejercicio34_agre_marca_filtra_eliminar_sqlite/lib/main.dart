@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   // Inicializar sqflite para escritorio
@@ -47,51 +48,64 @@ class _FormularioState extends State<Formulario> {
 
   final tituloController = TextEditingController();
   final descrController = TextEditingController();
-   String _filtroEstado = 'todo';
+  String _filtroEstado = 'todo';
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    _fitraTarea(_filtroEstado);
+    _initFiltroYDatos();
   }
 
+  Future<void> _initFiltroYDatos() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getString('filtro_estado') ?? 'todo';
+    _filtroEstado = saved;
+    await _fitraTarea(_filtroEstado);
+  }
 
+  Future<void> _fitraTarea(String estado) async {
+    List<Map<String, dynamic>> resultado;
+
+    if (estado == "pendiente") {
+      resultado = await widget.database.query(
+        'tarea',
+        where: 'completed = ?',
+        whereArgs: [0],
+      );
+    } else if (estado == "completada") {
+      resultado = await widget.database.query(
+        'tarea',
+        where: 'completed = ?',
+        whereArgs: [1],
+      );
+    } else {
+      resultado = await widget.database.query('tarea');
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('filtro_estado', estado);
+
+    setState(() {
+      _filtroEstado = estado;
+      _tarea = resultado;
+    });
+  }
 
   Future<void> _addTarea(String titulo, String descripcion) async {
+    final tituloText = tituloController.text.trim();
+    final descrText  = descrController.text.trim();
+    
     await widget.database.insert('tarea', {
-      'titulo': tituloController.text,
-      'descripcion': descrController.text,
+      'titulo': tituloText,
+      'descripcion': descrText,
       'completed': 0,
     });
     tituloController.clear();
     descrController.clear();
     _fitraTarea(_filtroEstado);
   }
-
-  Future<void> _fitraTarea(String estado) async {
-  List<Map<String, dynamic>> resultado;
-
-  if (estado == "pendiente") {
-    resultado = await widget.database.query(
-      'tarea',
-      where: 'completed = ?',
-      whereArgs: [0],
-    );
-  } else if (estado == "completada") {
-    resultado = await widget.database.query(
-      'tarea',
-      where: 'completed = ?',
-      whereArgs: [1],
-    );
-  } else {
-    resultado = await widget.database.query('tarea');
-  }
-
-  setState(() {
-    _filtroEstado = estado;  
-    _tarea = resultado;     
-  });
-}
 
   Future<void> _toggleTarea(int id, int completed) async {
     await widget.database.update(
@@ -121,9 +135,7 @@ class _FormularioState extends State<Formulario> {
               DropdownMenuItem(value: 'completada', child: Text('Completada')),
             ],
             onChanged: (value) {
-              setState(() {
-                _fitraTarea(value.toString());
-              });
+              _fitraTarea(value.toString());
             },
             value: _filtroEstado,
           ),
@@ -131,27 +143,43 @@ class _FormularioState extends State<Formulario> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: EdgeInsets.all(8),
+          Form(
+            key: _formKey,
+
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
+                  child: TextFormField(
                     controller: tituloController,
-                    decoration: InputDecoration(labelText: "Título"),
+                    decoration: const InputDecoration(labelText: "Título"),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Título no puede estar vacío';
+                      }
+                      return null;
+                    },
                   ),
                 ),
                 const SizedBox(width: 5),
                 Expanded(
-                  child: TextField(
+                  child: TextFormField(
                     controller: descrController,
-                    decoration: InputDecoration(labelText: "Descripción"),
+                    decoration: const InputDecoration(labelText: "Descripción"),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Descripción no puede estar vacía';
+                      }
+                      return null;
+                    },
                   ),
                 ),
-
                 IconButton(
-                  onPressed: () =>
-                      _addTarea(tituloController.text, descrController.text),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _addTarea(tituloController.text, descrController.text);
+                    }
+                  },
+
                   icon: Icon(Icons.add),
                 ),
               ],
