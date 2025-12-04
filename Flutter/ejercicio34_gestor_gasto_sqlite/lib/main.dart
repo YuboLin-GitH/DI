@@ -19,7 +19,8 @@ void main() async {
  id INTEGER PRIMARY KEY AUTOINCREMENT,
  tipo TEXT NOT NULL,
  categoria TEXT ,
- dinero REAL NOT NULL 
+ dinero REAL NOT NULL,
+ fecha TEXT NOT NULL 
  )
  ''');
   runApp(
@@ -43,8 +44,9 @@ class Transaccion {
   String tipo;
   String categoria;
   double dinero;
+  String fecha;
 
-  Transaccion(this.tipo, this.categoria, this.dinero);
+  Transaccion(this.tipo, this.categoria, this.dinero, this.fecha);
 }
 
 class GestoDineroProvider extends ChangeNotifier {
@@ -64,10 +66,20 @@ class GestoDineroProvider extends ChangeNotifier {
   }
 
   Future<void> addDatos(String tipo, String categoria, double dinero) async {
+    final fechaActual = DateTime.now();
+    final String fechaString =
+        '${fechaActual.year.toString().padLeft(4, '0')}-'
+        '${fechaActual.month.toString().padLeft(2, '0')}-'
+        '${fechaActual.day.toString().padLeft(2, '0')} '
+        '${fechaActual.hour.toString().padLeft(2, '0')}:'
+        '${fechaActual.minute.toString().padLeft(2, '0')}:'
+        '${fechaActual.second.toString().padLeft(2, '0')}';
+
     await database.insert('gestodenero', {
       'tipo': tipo,
       'categoria': categoria,
       'dinero': dinero,
+      'fecha': fechaString,
     });
     await loadDatos();
   }
@@ -92,10 +104,11 @@ class _FormularioState extends State<Formulario> {
   String? _categoriaSeleccionada;
 
   @override
-    void initState() {
-      super.initState();
-      _categoriaSeleccionada = CATEGORIAS[_tipoSeleccionado]!.first; 
-    }
+  void initState() {
+    super.initState();
+    _categoriaSeleccionada = CATEGORIAS[_tipoSeleccionado]!.first;
+  }
+
   @override
   Widget build(BuildContext context) {
     final gestoDineroProvider = Provider.of<GestoDineroProvider>(context);
@@ -208,21 +221,63 @@ class _FormularioState extends State<Formulario> {
                     children: [
                       ElevatedButton(
                         onPressed: () {
+                          // Validar dinero
+                          if (dineroController.text.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  "El campo dinero no puede estar vacío",
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+
+                          // Validar número
+                          final dinero = double.tryParse(dineroController.text);
+                          if (dinero == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Ingresa un número válido"),
+                              ),
+                            );
+                            return;
+                          }
+
+                          if (dinero <= 0) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("El dinero debe ser mayor que 0"),
+                              ),
+                            );
+                            return;
+                          }
+
+                          // Validar categoría
+                          if (_categoriaSeleccionada == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  "Debes seleccionar una categoría",
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+
+                          // Si todo está OK => guardar
                           gestoDineroProvider.addDatos(
                             _tipoSeleccionado,
                             _categoriaSeleccionada.toString(),
-                            double.parse(dineroController.text),
+                            dinero,
                           );
 
                           dineroController.clear();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _selectedtipo[0]
-                              ? Colors.red[300]
-                              : Colors.green[300],
-                          foregroundColor: Colors.black,
-                        ),
 
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Guardado correctamente")),
+                          );
+                        },
                         child: Text("Guardar"),
                       ),
                     ],
@@ -245,6 +300,18 @@ class Transacciones extends StatefulWidget {
 }
 
 class _TransaccionesState extends State<Transacciones> {
+  String formatearFecha(String fechaIso) {
+    final fecha = DateTime.parse(fechaIso);
+    final dia = fecha.day.toString().padLeft(2, '0');
+    final mes = fecha.month.toString().padLeft(2, '0');
+    final anio = fecha.year.toString();
+    final hora = fecha.hour.toString().padLeft(2, '0');
+    final minuto = fecha.minute.toString().padLeft(2, '0');
+    final segundo = fecha.minute.toString().padLeft(2, '0');
+
+    return "$dia/$mes/$anio $hora:$minuto:$segundo";
+  }
+
   @override
   Widget build(BuildContext context) {
     final gestoDineroProvider = Provider.of<GestoDineroProvider>(context);
@@ -294,16 +361,21 @@ class _TransaccionesState extends State<Transacciones> {
                 final gestoDinero = gastoLista[index];
                 final esGasto = gestoDinero['tipo'] == 'Gasto';
 
-                final Color transaccionColor = esGasto ? Colors.red : Colors.green;
-                final IconData transaccionIcon = esGasto ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded;
+                final Color transaccionColor = esGasto
+                    ? Colors.red
+                    : Colors.green;
+                final IconData transaccionIcon = esGasto
+                    ? Icons.arrow_downward_rounded
+                    : Icons.arrow_upward_rounded;
 
                 return ListTile(
-                 
-                  leading: Icon(transaccionIcon, color: transaccionColor,),
+                  leading: Icon(transaccionIcon, color: transaccionColor),
                   title: Text(gestoDinero['dinero'].toString()),
-                  subtitle: Text("${gestoDinero['tipo']} - ${gestoDinero['categoria']} "),
-                  //在右侧
-                  //trailing: Text("${gestoDinero['categoria']}"),
+                  subtitle: Text(
+                    "${gestoDinero['tipo']} - ${gestoDinero['categoria']} ",
+                  ),
+
+                  trailing: Text(formatearFecha(gestoDinero['fecha'])),
                 );
               },
             ),
