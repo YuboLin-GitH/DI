@@ -101,6 +101,7 @@ class _FormularioState extends State<Formulario> {
     'Gasto': ['Comida', 'Alquiler', 'Transporte', 'Otros Gastos'],
     'Ingreso': ['Salario', 'Regalo', 'Otros Ingresos'],
   };
+
   String? _categoriaSeleccionada;
 
   @override
@@ -220,6 +221,12 @@ class _FormularioState extends State<Formulario> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _tipoSeleccionado == 'Gasto'
+                              ? Colors.red
+                              : Colors.green,
+                        ),
+
                         onPressed: () {
                           // Validar dinero
                           if (dineroController.text.isEmpty) {
@@ -278,6 +285,7 @@ class _FormularioState extends State<Formulario> {
                             SnackBar(content: Text("Guardado correctamente")),
                           );
                         },
+
                         child: Text("Guardar"),
                       ),
                     ],

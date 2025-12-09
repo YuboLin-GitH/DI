@@ -30,9 +30,9 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
-    const Center(child: Text("🏠 Home", style: TextStyle(fontSize: 24))),
-    const Center(child: Text("🔍 Search", style: TextStyle(fontSize: 24))),
-    const Center(child: Text("⚙️ Settings", style: TextStyle(fontSize: 24))),
+    const Center(child: Text("Home", style: TextStyle(fontSize: 24))),
+    const Center(child: Text("Search", style: TextStyle(fontSize: 24))),
+    const Center(child: Text("Settings", style: TextStyle(fontSize: 24))),
   ];
 
   @override
