@@ -1,0 +1,22 @@
+[
+  {
+    "nombre": "Leche",
+    "precio": 1.15
+  },
+  {
+    "nombre": "Pan integral",
+    "precio": 2.50
+  },
+  {
+    "nombre": "Manzanas (kg)",
+    "precio": 1.99
+  },
+  {
+    "nombre": "Huevos (docena)",
+    "precio": 3.20
+  },
+  {
+    "nombre": "Pollo (kg)",
+    "precio": 6.80
+  }
+]
