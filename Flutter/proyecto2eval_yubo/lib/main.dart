@@ -3,7 +3,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 // para varia sistema
 import 'dart:io';
 
@@ -25,7 +25,8 @@ void main() async {
  id INTEGER PRIMARY KEY AUTOINCREMENT,
  titulo TEXT NOT NULL,
  autor TEXT NOT NULL,
- leido INTEGER NOT NULL DEFAULT 0
+ leido INTEGER NOT NULL DEFAULT 0,
+ gusta INTEGER NOT NULL DEFAULT 0
  )
  ''');
 
@@ -35,6 +36,7 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => BBDDProvider(database: database),
         ),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
 
       child: MyApp(),
@@ -47,13 +49,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Librería',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.brown),
-        useMaterial3: true,
+      theme: ThemeData.light().copyWith(
+        textTheme: Theme.of(
+          context,
+        ).textTheme.apply(fontSizeFactor: themeProvider.fontSize / 12.0),
       ),
+      darkTheme: ThemeData.dark().copyWith(
+        textTheme: Theme.of(
+          context,
+        ).textTheme.apply(fontSizeFactor: themeProvider.fontSize / 12.0),
+      ),
+      themeMode: themeProvider.themeMode,
       home: const MyHomePage(),
     );
   }
@@ -110,31 +120,55 @@ class Libro {
 class BBDDProvider extends ChangeNotifier {
   final Database database;
 
-  List<Map<String, dynamic>> _libroLista = [];
-  List<Map<String, dynamic>> get libroLista => _libroLista;
+  List<Map<String, dynamic>> _todoLibros = [];
+  List<Map<String, dynamic>> _misLibros = [];
+
+  List<Map<String, dynamic>> get todoLibros => _todoLibros;
+  List<Map<String, dynamic>> get misLibros => _misLibros;
 
   BBDDProvider({required Database database}) : database = database {
-    loadLibro();
+    loadLibros();
   }
 
-  Future<void> loadLibro() async {
-    final libros = await database.query('libro');
-    _libroLista = libros;
-    notifyListeners();
+  Future<void> loadLibros() async {
+    _todoLibros = await database.query('libro');
+
+    _misLibros = await database.query(
+      'libro',
+      where: 'gusta = ?',
+      whereArgs: [1],
+    );
+    notifyListeners(); // 通知 UI 刷新
   }
 
   Future<void> addLibro(String titulo, String autor) async {
     await database.insert('libro', {'titulo': titulo, 'autor': autor});
-    await loadLibro();
+    await loadLibros();
   }
 
-  Future<void> deleteLibro(String titulo, String autor) async {
-    await database.delete(
+  Future<void> deleteLibro(int id) async {
+    await database.delete('libro', where: 'id = ?', whereArgs: [id]);
+    loadLibros();
+  }
+
+  Future<void> toggleGusta(int id, int estadoGusta) async {
+    await database.update(
       'libro',
-      where: 'titulo = ? and  autor = ?',
-      whereArgs: [titulo, autor],
+      {'gusta': estadoGusta == 0 ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [id],
     );
-    loadLibro();
+    await loadLibros();
+  }
+
+  Future<void> toggleLeido(int id, int estadoLeido) async {
+    await database.update(
+      'libro',
+      {'leido': estadoLeido == 0 ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    await loadLibros();
   }
 }
 
@@ -142,20 +176,86 @@ class BBDDProvider extends ChangeNotifier {
 class MisLibrosScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: 20,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text("Elemento $index"),
-          leading: Icon(Icons.star),
-          onTap: () {
-            // ACCIÓN AL PULSAR UN ELEMENTO DE LA LISTA
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text("Elemento $index pulsado")));
-          },
-        );
-      },
+    // 获取 Provider 中的数据
+    final bbddProvider = Provider.of<BBDDProvider>(context);
+    final libros = bbddProvider.misLibros;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text("Mis Libros")),
+      // 使用 GridView.builder 实现网格布局
+      body: GridView.builder(
+        padding: const EdgeInsets.all(10),
+        // 控制网格列数和间距
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 5, // 每行显示 3 本书
+          crossAxisSpacing: 10, // 左右间距
+          mainAxisSpacing: 10, // 上下间距
+          childAspectRatio: 1.5, // 调整卡片的长宽比（书本通常是竖长的）
+        ),
+        itemCount: libros.length,
+        itemBuilder: (context, index) {
+          final libro = libros[index];
+          return Card(
+            elevation: 2,
+            clipBehavior: Clip.antiAlias,
+            child: Stack(
+              children: [
+                // 底层内容
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        child: const Center(child: Icon(Icons.book, size: 40)),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            libro['titulo'],
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          Text(
+                            libro['autor'],
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                // 右上角爱心（浮层）
+                Positioned(
+                  top: 4,
+                  right: 4,
+                  child: IconButton(
+                    icon: const Icon(Icons.favorite, color: Colors.red),
+                    onPressed: () {
+                      bbddProvider.toggleGusta(libro['id'], libro['gusta']);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -164,31 +264,79 @@ class LibreriaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bbddProvider = Provider.of<BBDDProvider>(context);
-    final libros = bbddProvider.libroLista;
+    final libros = bbddProvider.todoLibros;
 
     return Scaffold(
-      appBar: AppBar(title: Text("View")),
+      appBar: AppBar(title: Text("Librería")),
       body: libros.isEmpty
-          ? Center(child: Text("No hay datos"))
+          ? Center(child: Text("No hay libro"))
           : ListView.builder(
               itemCount: libros.length,
               itemBuilder: (context, index) {
                 final libro = libros[index];
                 return ListTile(
-                  leading: const Icon(Icons.book), 
-                  title: Text(libro['titulo']), 
-                  subtitle: Text(libro['autor']), 
-                  trailing: Text(libro['leido'] == 1 ? "Leído" : "Pendiente"),
+                  leading: const Icon(Icons.book),
+                  title: Text(libro['titulo']),
+                  subtitle: Text(libro['autor']),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          libro['gusta'] == 1
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: libro['gusta'] == 1 ? Colors.red : null,
+                        ),
+                        onPressed: () {
+                          bbddProvider.toggleGusta(libro['id'], libro['gusta']);
+                        },
+                      ),
+
+                      const SizedBox(width: 10),
+
+                      DropdownButton(
+                        iconEnabledColor: Theme.of(
+                          context,
+                        ).colorScheme.onSurface,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'pendiente',
+                            child: Text('Pendiente'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'leido',
+                            child: Text('Leído'),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          // 调用 Provider 的状态切换方法
+                          bbddProvider.toggleLeido(libro['id'], libro['leido']);
+                        },
+                        value: libro['leido'] == 1 ? 'leido' : 'pendiente',
+                      ),
+
+                      const SizedBox(width: 10),
+
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () => bbddProvider.deleteLibro(libro['id']),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),
-    floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          _mostrarFormulario(context, bbddProvider); 
+          _mostrarFormulario(context, bbddProvider);
         },
         icon: const Icon(Icons.add),
         label: const Text("Añadir Libro"),
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer, 
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       ),
     );
   }
@@ -219,9 +367,10 @@ class LibreriaScreen extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
             child: const Text("Cancelar"),
           ),
-          FilledButton( 
-            onPressed: () {     
-              if (tituloController.text.isNotEmpty && autorController.text.isNotEmpty) {
+          FilledButton(
+            onPressed: () {
+              if (tituloController.text.isNotEmpty &&
+                  autorController.text.isNotEmpty) {
                 provider.addLibro(tituloController.text, autorController.text);
                 Navigator.pop(context);
               }
@@ -234,11 +383,111 @@ class LibreriaScreen extends StatelessWidget {
   }
 }
 
+// parte ajuste
+
+class ThemeProvider extends ChangeNotifier {
+  bool _esClaro = false;
+  bool get esClaro => _esClaro;
+  ThemeMode get themeMode => _esClaro ? ThemeMode.light : ThemeMode.dark;
+
+  static const String _fontSizeKey = 'fontSize';
+  double _fontSize = 12.0;
+
+  double get fontSize => _fontSize;
+
+  ThemeProvider() {
+    _loadFromPrefs();
+  }
+
+  Future<void> _loadFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    _esClaro = prefs.getBool('esClaro') ?? false;
+
+    _fontSize = prefs.getDouble(_fontSizeKey) ?? 12.0;
+    notifyListeners();
+  }
+
+  Future<void> toggleTheme() async {
+    _esClaro = !_esClaro;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('esClaro', _esClaro);
+  }
+
+  Future<void> setFontSizeScale(double newScale) async {
+    _fontSize = newScale.clamp(10, 14);
+
+    notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_fontSizeKey, _fontSize);
+  }
+}
+
 class AjustesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Pantalla de Ajustes", style: TextStyle(fontSize: 24)),
+    final themeProvider = context.watch<ThemeProvider>();
+    final esClaro = context.watch<ThemeProvider>().esClaro;
+    final currentScale = themeProvider.fontSize;
+    return Scaffold(
+      body: ListView(
+        children: [
+          Container(
+            padding: EdgeInsets.all(5),
+            margin: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black,
+                  blurRadius: 1,
+                  blurStyle: BlurStyle.outer,
+                ),
+              ],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: ListTile(
+              leading: Icon(Icons.dark_mode),
+              title: Text("Tema claro"),
+              trailing: Switch(
+                onChanged: (_) => context.read<ThemeProvider>().toggleTheme(),
+                value: esClaro,
+              ),
+              contentPadding: EdgeInsets.all(10),
+            ),
+          ),
+
+          Container(
+            padding: EdgeInsets.all(5),
+            margin: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black,
+                  blurRadius: 1,
+                  blurStyle: BlurStyle.outer,
+                ),
+              ],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: ListTile(
+              title: Text(
+                "Tamaño de texto: ${currentScale.toStringAsFixed(1)}",
+              ),
+              subtitle: Slider(
+                min: 10,
+                max: 14,
+                divisions: 4,
+                value: currentScale,
+                onChanged: (value) {
+                  themeProvider.setFontSizeScale(value);
+                },
+              ),
+              contentPadding: EdgeInsets.all(10),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
