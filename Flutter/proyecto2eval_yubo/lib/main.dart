@@ -1,122 +1,244 @@
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:path/path.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const MyApp());
+// para varia sistema
+import 'dart:io';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // 异步 main 必须加这一行
+
+  // SOLO para escritorio Windows y MacOS
+  if (Platform.isWindows || Platform.isMacOS) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
+
+  // Ruta para la base de datos
+  final dbPath = join(await databaseFactory.getDatabasesPath(), 'libros.db');
+  final database = await databaseFactory.openDatabase(dbPath);
+  // Crear tabla de nombre si no existe
+  await database.execute('''
+ CREATE TABLE IF NOT EXISTS libro (
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ titulo TEXT NOT NULL,
+ autor TEXT NOT NULL,
+ leido INTEGER NOT NULL DEFAULT 0
+ )
+ ''');
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => BBDDProvider(database: database),
+        ),
+      ],
+
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.brown),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  int _currentIndex = 0; // INDICE ACTUAL DEL BOTTOM NAVIGATION BAR
 
-  void _incrementCounter() {
+  // LISTA DE WIDGETS PARA CADA PANTALLA
+  final List<Widget> _screens = [
+    MisLibrosScreen(),
+    LibreriaScreen(),
+    AjustesScreen(),
+  ];
+
+  void _onTap(int index) {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _currentIndex = index; // ACTUALIZA EL INDICE
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+      body: _screens[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.book), label: "Mis Libros"),
+          BottomNavigationBarItem(icon: Icon(Icons.store), label: "Librería"),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Ajustes"),
+        ],
+        currentIndex: _currentIndex,
+        onTap: _onTap,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+    );
+  }
+}
+
+class Libro {
+  String titulo;
+  String autor;
+  int leido;
+
+  Libro(this.titulo, this.autor, this.leido);
+}
+
+class BBDDProvider extends ChangeNotifier {
+  final Database database;
+
+  List<Map<String, dynamic>> _libroLista = [];
+  List<Map<String, dynamic>> get libroLista => _libroLista;
+
+  BBDDProvider({required Database database}) : database = database {
+    loadLibro();
+  }
+
+  Future<void> loadLibro() async {
+    final libros = await database.query('libro');
+    _libroLista = libros;
+    notifyListeners();
+  }
+
+  Future<void> addLibro(String titulo, String autor) async {
+    await database.insert('libro', {'titulo': titulo, 'autor': autor});
+    await loadLibro();
+  }
+
+  Future<void> deleteLibro(String titulo, String autor) async {
+    await database.delete(
+      'libro',
+      where: 'titulo = ? and  autor = ?',
+      whereArgs: [titulo, autor],
+    );
+    loadLibro();
+  }
+}
+
+// PANTALLAS INDIVIDUALES
+class MisLibrosScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: 20,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text("Elemento $index"),
+          leading: Icon(Icons.star),
+          onTap: () {
+            // ACCIÓN AL PULSAR UN ELEMENTO DE LA LISTA
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text("Elemento $index pulsado")));
+          },
+        );
+      },
+    );
+  }
+}
+
+class LibreriaScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final bbddProvider = Provider.of<BBDDProvider>(context);
+    final libros = bbddProvider.libroLista;
+
+    return Scaffold(
+      appBar: AppBar(title: Text("View")),
+      body: libros.isEmpty
+          ? Center(child: Text("No hay datos"))
+          : ListView.builder(
+              itemCount: libros.length,
+              itemBuilder: (context, index) {
+                final libro = libros[index];
+                return ListTile(
+                  leading: const Icon(Icons.book), 
+                  title: Text(libro['titulo']), 
+                  subtitle: Text(libro['autor']), 
+                  trailing: Text(libro['leido'] == 1 ? "Leído" : "Pendiente"),
+                );
+              },
+            ),
+    floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          _mostrarFormulario(context, bbddProvider); 
+        },
+        icon: const Icon(Icons.add),
+        label: const Text("Añadir Libro"),
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer, 
+      ),
+    );
+  }
+
+  void _mostrarFormulario(BuildContext context, BBDDProvider provider) {
+    final TextEditingController tituloController = TextEditingController();
+    final TextEditingController autorController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Añadir nuevo libro"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: tituloController,
+              decoration: const InputDecoration(labelText: "Título"),
+            ),
+            TextField(
+              controller: autorController,
+              decoration: const InputDecoration(labelText: "Autor"),
             ),
           ],
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancelar"),
+          ),
+          FilledButton( 
+            onPressed: () {     
+              if (tituloController.text.isNotEmpty && autorController.text.isNotEmpty) {
+                provider.addLibro(tituloController.text, autorController.text);
+                Navigator.pop(context);
+              }
+            },
+            child: const Text("Guardar"),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class AjustesScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text("Pantalla de Ajustes", style: TextStyle(fontSize: 24)),
     );
   }
 }
