@@ -179,7 +179,7 @@ class BBDDProvider extends ChangeNotifier {
   /// Elimina un libro de la base de datos según su identificador.
   Future<void> deleteLibro(int id) async {
     await database.delete('libro', where: 'id = ?', whereArgs: [id]);
-    loadLibros();
+    await loadLibros();
   }
 
 
