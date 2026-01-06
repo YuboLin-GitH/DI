@@ -57,14 +57,16 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Librería',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light().copyWith(
-        textTheme: Theme.of(
-          context,
-        ).textTheme.apply(fontSizeFactor: themeProvider.fontSize / 12.0),
+        textTheme: Theme.of(context,).textTheme.apply(
+              fontSizeFactor: themeProvider.fontSize / 12.0, 
+              bodyColor: Colors.black,    
+              displayColor: Colors.black,),
       ),
       darkTheme: ThemeData.dark().copyWith(
-        textTheme: Theme.of(
-          context,
-        ).textTheme.apply(fontSizeFactor: themeProvider.fontSize / 12.0),
+        textTheme: Theme.of(context,).textTheme.apply(
+              fontSizeFactor: themeProvider.fontSize / 12.0, 
+              bodyColor: Colors.white, 
+              displayColor: Colors.white,),
       ),
       themeMode: themeProvider.themeMode,
       home: const MyHomePage(),
@@ -258,18 +260,12 @@ class MisLibrosScreen extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                           Text(
                             libro['autor'],
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant,
-                            ),
                           ),
                         ],
                       ),
@@ -342,12 +338,7 @@ class LibreriaScreen extends StatelessWidget {
                       const SizedBox(width: 10),
 
                       DropdownButton(
-                        iconEnabledColor: Theme.of(
-                          context,
-                        ).colorScheme.onSurface,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
+                      
                         items: const [
                           DropdownMenuItem(
                             value: 'pendiente',
