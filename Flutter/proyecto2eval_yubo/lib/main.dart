@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // 异步 main 必须加这一行
+  WidgetsFlutterBinding.ensureInitialized();
 
   // SOLO para escritorio Windows y MacOS
   if (Platform.isWindows || Platform.isMacOS) {
@@ -165,7 +165,7 @@ class BBDDProvider extends ChangeNotifier {
       where: 'gusta = ?',
       whereArgs: [1],
     );
-    notifyListeners(); // 通知 UI 刷新
+    notifyListeners(); // Notifica la actualización a la interfaz de usuario
   }
 
   /// Inserta un nuevo libro en la base de datos.
@@ -215,21 +215,20 @@ class BBDDProvider extends ChangeNotifier {
 class MisLibrosScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // 获取 Provider 中的数据
+    // Obtener datos del proveedor
     final bbddProvider = Provider.of<BBDDProvider>(context);
     final libros = bbddProvider.misLibros;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Mis Libros")),
-      // 使用 GridView.builder 实现网格布局
+    
       body: GridView.builder(
         padding: const EdgeInsets.all(10),
-        // 控制网格列数和间距
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 5, // 每行显示 3 本书
-          crossAxisSpacing: 10, // 左右间距
-          mainAxisSpacing: 10, // 上下间距
-          childAspectRatio: 1.5, // 调整卡片的长宽比（书本通常是竖长的）
+          crossAxisCount: 5, 
+          crossAxisSpacing: 10, // Espaciado izquierdo y derecho
+          mainAxisSpacing: 10, // Espaciado superior e inferior
+          childAspectRatio: 1.5, // altura
         ),
         itemCount: libros.length,
         itemBuilder: (context, index) {
@@ -239,7 +238,6 @@ class MisLibrosScreen extends StatelessWidget {
             clipBehavior: Clip.antiAlias,
             child: Stack(
               children: [
-                // 底层内容
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -279,7 +277,6 @@ class MisLibrosScreen extends StatelessWidget {
                   ],
                 ),
 
-                // 右上角爱心（浮层）
                 Positioned(
                   top: 4,
                   right: 4,
@@ -362,7 +359,7 @@ class LibreriaScreen extends StatelessWidget {
                           ),
                         ],
                         onChanged: (value) {
-                          // 调用 Provider 的状态切换方法
+                          // Cambio de estado del proveedor
                           bbddProvider.toggleLeido(libro['id'], libro['leido']);
                         },
                         value: libro['leido'] == 1 ? 'leido' : 'pendiente',
@@ -390,6 +387,7 @@ class LibreriaScreen extends StatelessWidget {
     );
   }
 
+  /// Muestra un diálogo emergente para introducir los datos de un nuevo libro.
   void _mostrarFormulario(BuildContext context, BBDDProvider provider) {
     final TextEditingController tituloController = TextEditingController();
     final TextEditingController autorController = TextEditingController();
@@ -418,8 +416,8 @@ class LibreriaScreen extends StatelessWidget {
           ),
           FilledButton(
             onPressed: () {
-              if (tituloController.text.isNotEmpty &&
-                  autorController.text.isNotEmpty) {
+              // Validación simple: ambos campos deben tener texto
+              if (tituloController.text.isNotEmpty &&autorController.text.isNotEmpty) {
                 provider.addLibro(tituloController.text, autorController.text);
                 Navigator.pop(context);
               }
