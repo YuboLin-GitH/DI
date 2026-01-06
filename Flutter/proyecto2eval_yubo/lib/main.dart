@@ -44,6 +44,9 @@ void main() async {
   );
 }
 
+/// Widget raíz de la aplicación.
+///
+/// Configura el tema y el modo visual.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -69,6 +72,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
+/// Página principal que contiene la navegación inferior.
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -109,6 +114,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+
+/// Representa el modelo de datos de un Libro.
 class Libro {
   String titulo;
   String autor;
@@ -117,10 +124,24 @@ class Libro {
   Libro(this.titulo, this.autor, this.leido);
 }
 
+
+
+/// Provider encargado de gestionar la base de datos SQLite.
+///
+/// Se ocupa de:
+/// - Cargar todos los libros desde la base de datos
+/// - Insertar nuevos libros
+/// - Eliminar libros existentes
+/// - Cambiar el estado de lectura y favoritos
+///
+/// Notifica a la interfaz cuando los datos cambian.
 class BBDDProvider extends ChangeNotifier {
   final Database database;
 
+  /// Lista que contiene todos los libros de la base de datos.
   List<Map<String, dynamic>> _todoLibros = [];
+
+  /// Lista que contiene solo los libros marcados como favoritos (gusta = 1).
   List<Map<String, dynamic>> _misLibros = [];
 
   List<Map<String, dynamic>> get todoLibros => _todoLibros;
@@ -130,6 +151,12 @@ class BBDDProvider extends ChangeNotifier {
     loadLibros();
   }
 
+
+  /// Carga todos los libros desde la base de datos.
+  ///
+  /// Actualiza:
+  /// - [_todoLibros] con todos los libros
+  /// - [_misLibros] con los libros marcados como favoritos
   Future<void> loadLibros() async {
     _todoLibros = await database.query('libro');
 
@@ -141,16 +168,23 @@ class BBDDProvider extends ChangeNotifier {
     notifyListeners(); // 通知 UI 刷新
   }
 
+  /// Inserta un nuevo libro en la base de datos.
   Future<void> addLibro(String titulo, String autor) async {
     await database.insert('libro', {'titulo': titulo, 'autor': autor});
     await loadLibros();
   }
 
+  /// Elimina un libro de la base de datos según su identificador.
   Future<void> deleteLibro(int id) async {
     await database.delete('libro', where: 'id = ?', whereArgs: [id]);
     loadLibros();
   }
 
+
+  /// Alterna el estado de favorito de un libro.
+  ///
+  /// Si estadoGusta es 0, se marcará como favorito.
+  /// Si es 1, se desmarcará.
   Future<void> toggleGusta(int id, int estadoGusta) async {
     await database.update(
       'libro',
@@ -161,6 +195,9 @@ class BBDDProvider extends ChangeNotifier {
     await loadLibros();
   }
 
+  /// Alterna el estado de lectura de un libro.
+  ///
+  /// Permite marcar un libro como leído o pendiente.
   Future<void> toggleLeido(int id, int estadoLeido) async {
     await database.update(
       'libro',
@@ -172,7 +209,9 @@ class BBDDProvider extends ChangeNotifier {
   }
 }
 
-// PANTALLAS INDIVIDUALES
+// PANTALLAS Mis libros
+
+/// Pantalla que muestra los libros marcados como favoritos.
 class MisLibrosScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -260,6 +299,16 @@ class MisLibrosScreen extends StatelessWidget {
   }
 }
 
+
+// PANTALLAS Libreria
+
+/// Pantalla principal de la librería.
+///
+/// Muestra todos los libros almacenados y permite:
+/// - Marcar favoritos
+/// - Cambiar estado de lectura
+/// - Eliminar libros
+/// - Añadir nuevos libros
 class LibreriaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -385,6 +434,13 @@ class LibreriaScreen extends StatelessWidget {
 
 // parte ajuste
 
+
+/// Provider encargado de la configuración visual de la aplicación.
+///
+/// Permite:
+/// - Cambiar entre tema claro y oscuro
+/// - Ajustar el tamaño del texto
+/// - Guardar preferencias usando SharedPreferences
 class ThemeProvider extends ChangeNotifier {
   bool _esClaro = false;
   bool get esClaro => _esClaro;
@@ -407,6 +463,7 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Cambia entre el tema claro y oscuro y guarda la preferencia.
   Future<void> toggleTheme() async {
     _esClaro = !_esClaro;
     notifyListeners();
@@ -414,6 +471,10 @@ class ThemeProvider extends ChangeNotifier {
     await prefs.setBool('esClaro', _esClaro);
   }
 
+
+  /// Establece el tamaño del texto de la aplicación.
+  ///
+  /// El valor se limita entre 10 y 14.
   Future<void> setFontSizeScale(double newScale) async {
     _fontSize = newScale.clamp(10, 14);
 
@@ -424,6 +485,13 @@ class ThemeProvider extends ChangeNotifier {
   }
 }
 
+
+
+/// Pantalla de ajustes de la aplicación.
+///
+/// Permite:
+/// - Cambiar el tema (claro / oscuro)
+/// - Ajustar el tamaño del texto
 class AjustesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
