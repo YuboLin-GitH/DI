@@ -9,13 +9,13 @@ void main() {
   late Database database;
   late BBDDProvider provider;
 
-  // 初始化 SQLite FFI（桌面测试必须）
+  // iniciar SQLite FFI para Windows
   setUpAll(() {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   });
 
-  // 每个测试前创建一个“内存数据库”
+  // Cree una base de datos antes de cada prueba.
   setUp(() async {
     database = await databaseFactory.openDatabase(inMemoryDatabasePath);
 
