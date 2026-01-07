@@ -224,13 +224,27 @@ class MisLibrosScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text("Mis Libros")),
     
-      body: GridView.builder(
+      body: libros.isEmpty ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.favorite_border, size: 60, color: Colors.grey),
+                  SizedBox(height: 16),
+                  Text("No hay libros en favoritos", 
+                    style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  SizedBox(height: 16),
+                  Text("Ve a visitar la librería.",
+                    style: TextStyle(fontSize: 18)),
+                ],
+              ),
+            )
+          :GridView.builder(
         padding: const EdgeInsets.all(10),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 5, 
+          crossAxisCount: 3, 
           crossAxisSpacing: 10, // Espaciado izquierdo y derecho
           mainAxisSpacing: 10, // Espaciado superior e inferior
-          childAspectRatio: 1.5, // altura
+          childAspectRatio: 0.7, // altura
         ),
         itemCount: libros.length,
         itemBuilder: (context, index) {
