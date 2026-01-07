@@ -7,6 +7,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 // para varia sistema
 import 'dart:io';
 
+
+//Para generar el ejecutable de Windows:
+//   flutter build windows
+
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
