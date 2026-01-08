@@ -234,6 +234,7 @@ class MisLibrosScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+
                   Icon(Icons.favorite_border, size: 60, color: Colors.grey),
                   SizedBox(height: 16),
                   Text("No hay libros en favoritos", 
