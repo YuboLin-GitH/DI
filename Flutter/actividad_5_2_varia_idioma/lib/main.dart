@@ -52,7 +52,7 @@ class _FormularioState extends State<Formulario> {
               label: l10n.userName,
               hint: l10n.nameHint,
               child: TextField(
-                decoration: InputDecoration(labelText: 'Introduce tu nombre'),
+                decoration: InputDecoration(labelText: l10n.userName),
               ),
             ),
 
@@ -66,7 +66,7 @@ class _FormularioState extends State<Formulario> {
               hint: l10n.emailHint,
               child: TextField(
                 decoration: InputDecoration(
-                  labelText: 'Introduce tu correo electronico',
+                  labelText: l10n.email,
                 ),
               ),
             ),
@@ -74,7 +74,7 @@ class _FormularioState extends State<Formulario> {
             Semantics(
               label: l10n.sendButton,
               hint: l10n.submitHint,
-              child: ElevatedButton(onPressed: () {}, child: Text("Enviar")),
+              child: ElevatedButton(onPressed: () {}, child: Text(l10n.sendButton)),
             ),
           ],
         ),

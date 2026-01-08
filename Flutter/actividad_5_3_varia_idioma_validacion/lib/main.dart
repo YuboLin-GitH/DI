@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -42,8 +41,10 @@ class _FormularioState extends State<Formulario> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     return Scaffold(
       body: Form(
+        
         child: Column(
           children: [
             Text("Nombre de usuario"),
@@ -51,8 +52,14 @@ class _FormularioState extends State<Formulario> {
             Semantics(
               label: l10n.userName,
               hint: l10n.nameHint,
-              child: TextField(
+              child: TextFormField(
                 decoration: InputDecoration(labelText: 'Introduce tu nombre'),
+                validator: (value) {
+                  if (value?.isEmpty ?? true) {
+                    return "El nombre no puede estar vacio";
+                  }
+                  return null;
+                },
               ),
             ),
 
@@ -64,17 +71,36 @@ class _FormularioState extends State<Formulario> {
             Semantics(
               label: l10n.email,
               hint: l10n.emailHint,
-              child: TextField(
+              child: TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Introduce tu correo electronico',
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, introduce un email';
+                  }
+                  // Expresión regular simple para validar email
+                  final emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',);
+                  
+                  if (!emailRegExp.hasMatch(value)) {
+                    return 'Introduce un correo electrónico válido';
+                  }
+                  return null; // Si todo está bien, devuelve null
+                },
               ),
             ),
             const SizedBox(width: 10),
             Semantics(
               label: l10n.sendButton,
               hint: l10n.submitHint,
-              child: ElevatedButton(onPressed: () {}, child: Text("Enviar")),
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    print(' Formulario enviado correctamente!');
+                  }
+                },
+                child: Text("Enviar"),
+              ),
             ),
           ],
         ),
