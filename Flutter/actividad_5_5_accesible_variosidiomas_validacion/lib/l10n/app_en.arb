@@ -1,0 +1,11 @@
+{
+    "formTitle": "Contact Form",
+    "nameLabel": "Full Name",
+    "nameHint": "Please enter your name",
+    "emailLabel": "Email Address",
+    "emailHint": "example@mail.com",
+    "submitButton": "Submit Data",
+    "errorNameEmpty": "Name is required",
+    "errorEmailInvalid": "Email is invalid",
+    "textScaleLabel": "Text size"
+}

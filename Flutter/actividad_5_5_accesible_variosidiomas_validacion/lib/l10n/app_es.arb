@@ -1,0 +1,11 @@
+{
+    "formTitle": "Formulario de Contacto",
+    "nameLabel": "Nombre completo",
+    "nameHint": "Por favor ingresa tu nombre",
+    "emailLabel": "Correo electrónico",
+    "emailHint": "ejemplo@correo.com",
+    "submitButton": "Enviar datos",
+    "errorNameEmpty": "El nombre es obligatorio",
+    "errorEmailInvalid": "El correo no es válido",
+    "textScaleLabel": "Tamaño de texto"
+}
