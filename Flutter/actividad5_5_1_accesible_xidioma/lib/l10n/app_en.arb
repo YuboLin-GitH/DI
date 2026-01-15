@@ -1,0 +1,10 @@
+{
+  "titulo": "Contact Form",
+  "nombreLabel": "Name",
+  "nombreHint": "Enter your name",
+  "correoLaber": "Email Address",
+  "correoHint": "Enter your email address",
+  "botonEnviar": "Submit",
+  "botonLimpiar": "Clear"
+}
+

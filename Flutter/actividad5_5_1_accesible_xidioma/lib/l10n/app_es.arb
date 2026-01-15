@@ -1,0 +1,9 @@
+{
+  "titulo": "Formulario de contacto",
+  "nombreLabel": "Nombre",
+  "nombreHint": "Introduce tu nombre",
+  "correoLaber": "Correo electrónico",
+  "correoHint": "Introduce tu correo electrónico",
+  "botonEnviar": "Enviar",
+  "botonLimpiar": "Limpiar"
+}
