@@ -5,7 +5,8 @@ import 'package:actividad5_5_1_accesible_xidioma/models/formulario_model.dart';
 class FormularioViewmodel extends ChangeNotifier {
   String nombre ="";
   String correo = "";
-  
+  final nombreControlador = TextEditingController();
+  final correoControlador = TextEditingController();
 
 
   //validarNombre
@@ -13,7 +14,7 @@ class FormularioViewmodel extends ChangeNotifier {
     if(valor == null || valor.isEmpty){
         return "El campo esta vacio";
     }
-    
+    return null;
   }
   //validarcorreor
   String? validarCorreo(String? valor){
@@ -23,21 +24,23 @@ class FormularioViewmodel extends ChangeNotifier {
      final RegExp emailRegex = RegExp(
     r'^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$',
     );
-    if(emailRegex.hasMatch(valor)){
+    if(!emailRegex.hasMatch(valor)){
       return "Pon un email valido";
     }
+    return null;
   }
 
   //limpiarFormulario
   void LimpiaFormulario(){
-  
+    nombreControlador.clear(); 
+    correoControlador.clear();
     nombre="";
     correo="";
     notifyListeners();
   }
   //enviarFormulario
   void enviarFormulario(String nombre , String correo){
-      final contacto = ContactoFormulario(nombre, correo);
+      final contacto = ContactoFormulario(nombreControlador.text, correoControlador.text);
 
       print(contacto.toString());
       notifyListeners();

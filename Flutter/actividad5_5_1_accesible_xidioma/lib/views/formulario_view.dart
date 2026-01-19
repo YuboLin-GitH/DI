@@ -13,9 +13,6 @@ class Formulario extends StatefulWidget {
 class _FormularioState extends State<Formulario> {
   final formularioKey =  GlobalKey<FormState>();
 
-  final nombreControlador = TextEditingController();
-  final correoControlador = TextEditingController();
-
   
   @override
   Widget build(BuildContext context) {
@@ -25,29 +22,32 @@ class _FormularioState extends State<Formulario> {
 
       body: 
       SingleChildScrollView(
-        key: formularioKey,
+        child: Form( 
+          key: formularioKey,
         child: Column(
         children: [
           TextFormField(
-            controller: nombreControlador,
+            controller: viewModel.nombreControlador,
             decoration: InputDecoration(labelText: l10n.nombreLabel , hintText: l10n.nombreHint),
             validator: viewModel.validarNombre,
           ),
 
           TextFormField(
-            controller: correoControlador,
+            controller: viewModel.correoControlador,
             decoration: InputDecoration(labelText: l10n.correoLaber, hintText: l10n.correoHint ),
             validator: viewModel.validarCorreo,
           ),
           
           OutlinedButton(onPressed: (){
             if(formularioKey.currentState?.validate() == true){
-              viewModel.enviarFormulario(nombreControlador.text, correoControlador.text);
+              viewModel.enviarFormulario(viewModel.nombreControlador.text, viewModel.correoControlador.text);
             }
           }, child: Text(l10n.botonEnviar)),
           OutlinedButton(onPressed: (){viewModel.LimpiaFormulario();}, child: Text(l10n.botonLimpiar))
         ],
-      )),
+        )
+        ),
+      )
     );
   }
 }
