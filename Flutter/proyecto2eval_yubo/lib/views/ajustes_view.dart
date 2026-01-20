@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:proyecto2eval_yubo/providers/theme_provider.dart';
@@ -9,7 +8,14 @@ import 'package:proyecto2eval_yubo/providers/theme_provider.dart';
 /// Permite:
 /// - Cambiar el tema (claro / oscuro)
 /// - Ajustar el tamaño del texto
-class AjustesScreen extends StatelessWidget {
+class AjustesScreen extends StatefulWidget {
+  const AjustesScreen({super.key});
+
+  @override
+  State<AjustesScreen> createState() => _AjustesScreenState();
+}
+
+class _AjustesScreenState extends State<AjustesScreen> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();

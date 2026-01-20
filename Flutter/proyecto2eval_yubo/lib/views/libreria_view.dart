@@ -1,8 +1,12 @@
-// PANTALLAS Libreria
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:proyecto2eval_yubo/providers/db_provider.dart';
+
+
+
+
+// PANTALLAS Libreria
+
 /// Pantalla principal de la librería.
 ///
 /// Muestra todos los libros almacenados y permite:
@@ -10,8 +14,6 @@ import 'package:proyecto2eval_yubo/providers/db_provider.dart';
 /// - Cambiar estado de lectura
 /// - Eliminar libros
 /// - Añadir nuevos libros
-
-
 class LibreriaScreen extends StatefulWidget {
   const LibreriaScreen({super.key});
 
