@@ -28,7 +28,20 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
     final libros = bbddProvider.todoLibros;
 
     return Scaffold(
-      appBar: AppBar(title: Text("Librería")),
+      appBar: AppBar(title: Text("Librería"), 
+        actions: [
+          DropdownButton(
+            items: const [
+              DropdownMenuItem(value: 'todo', child: Text('Todos')),
+              DropdownMenuItem(value: 'leido', child: Text('Leido')),
+              DropdownMenuItem(value: 'pendiente', child: Text('Pendiente')),
+            ],
+            onChanged: (value) {
+              _fitraLibro(value.toString());
+            },
+            value: _filtroEstado,
+          ),
+        ],),
       body: libros.isEmpty
           ? Center(child: Text("No hay libro"))
           : ListView.builder(
