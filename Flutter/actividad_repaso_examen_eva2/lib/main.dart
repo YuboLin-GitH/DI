@@ -1,9 +1,14 @@
+import 'package:actividad_repaso_examen_eva2/models/CounterModel.dart';
+import 'package:actividad_repaso_examen_eva2/viewmodels/CounterViewModel.dart';
 import 'package:actividad_repaso_examen_eva2/views/CounterScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(create: (_)=> CounterViewModel(CounterModel()),
+    child: MyApp(),)
+  );
 }
 
 class MyApp extends StatelessWidget {
