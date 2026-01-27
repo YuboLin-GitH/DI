@@ -1,5 +1,4 @@
 import 'package:actividad_repaso_examen_eva2/models/CounterModel.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
 class CounterViewModel extends ChangeNotifier{
