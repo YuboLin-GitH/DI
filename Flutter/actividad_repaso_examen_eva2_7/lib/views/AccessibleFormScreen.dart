@@ -1,3 +1,4 @@
+import 'package:actividad_repaso_examen_eva2_7/l10n/app_localizations.dart';
 import 'package:actividad_repaso_examen_eva2_7/viewmodels/FormViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,8 @@ class AccessibleFormScreen extends StatelessWidget {
     // 如果想要更纯粹，这里可以用 context.read，但我写 watch 也没错
     final viewModel = context.watch<FormViewModel>();
 
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(title: Text('Formulario Accesible MVVM')),
       body: Padding(
@@ -32,13 +35,13 @@ class AccessibleFormScreen extends StatelessWidget {
             children: [
               // --- 名字输入框 ---
               Semantics(
-                label: 'Campo de texto para nombre',
-                hint: 'Introduce tu nombre completo',
+                label: l10n.nameLabel,
+                hint: l10n.nameHint,
                 child: TextFormField(
                   key: Key('nameField'),
                   controller: _nameController,
                   decoration: InputDecoration(
-                    labelText: 'Nombre',
+                    labelText: l10n.nameLabel,
                     border: OutlineInputBorder(),
                   ),
                   // 调用 ViewModel 的验证逻辑
@@ -50,13 +53,13 @@ class AccessibleFormScreen extends StatelessWidget {
               
               // --- 电话输入框 ---
               Semantics(
-                label: 'Campo de texto para teléfono',
-                hint: 'Introduce tu número de teléfono',
+                label: l10n.phoneLabel,
+                hint: l10n.phoneHint,
                 child: TextFormField(
                   key: Key('phoneField'),
                   controller: _phoneController,
                   decoration: InputDecoration(
-                    labelText: 'Teléfono',
+                    labelText: l10n.phoneLabel,
                     border: OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.phone,
@@ -69,9 +72,10 @@ class AccessibleFormScreen extends StatelessWidget {
               
               // --- 提交按钮 ---
               Semantics(
-                label: 'Botón de enviar formulario',
+                label: l10n.submitButton,
                 hint: 'Pulsa para enviar los datos',
                 child: ElevatedButton(
+                  key: Key('submitBtn'),
                   onPressed: () {
                     // 调用 ViewModel 的提交方法
                     // 注意：这里需要把 formKey 传进去，或者让 ViewModel 不依赖 key
@@ -79,13 +83,13 @@ class AccessibleFormScreen extends StatelessWidget {
                     
                     if (_formKey.currentState!.validate()) {
                        ScaffoldMessenger.of(context).showSnackBar(
-                         SnackBar(content: Text('Formulario enviado con éxito')),
+                         SnackBar(content: Text(l10n.successMessage)),
                        );
                        // 这里可以调用 viewModel.saveData(...)
                        _clearFields();
                     }
                   },
-                  child: Text('Enviar'),
+                  child: Text(l10n.submitButton),
                 ),
               ),
             ],

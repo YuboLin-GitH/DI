@@ -1,3 +1,4 @@
+import 'package:actividad_repaso_examen_eva2_7/l10n/app_localizations.dart';
 import 'package:actividad_repaso_examen_eva2_7/viewmodels/FormViewModel.dart';
 import 'package:actividad_repaso_examen_eva2_7/views/AccessibleFormScreen.dart';
 import 'package:flutter/material.dart';
@@ -10,15 +11,20 @@ void main() {
     // 1. 构建测试环境 (必须包 Provider)
     await tester.pumpWidget(
       ChangeNotifierProvider(
-        create: (_) => FormViewModel(),
-        child: MaterialApp(home: AccessibleFormScreen()),
+        create: (_) => FormViewModel(), // 这里给测试环境注入逻辑
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: Locale('es'),
+          home: AccessibleFormScreen(),
+        ),
       ),
     );
 
     // 2. 找到控件
     final nameFinder = find.byKey(Key('nameField'));
     final phoneFinder = find.byKey(Key('phoneField'));
-    final btnFinder = find.text('Enviar');
+    final btnFinder = find.byKey(Key('submitBtn'));
 
     // 3. 输入内容
     await tester.enterText(nameFinder, 'Usuario Test');

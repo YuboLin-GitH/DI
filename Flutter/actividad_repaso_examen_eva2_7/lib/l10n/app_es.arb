@@ -1,0 +1,12 @@
+{
+    "appTitle": "Formulario Accesible",
+    "nameLabel": "Nombre",
+    "nameHint": "Introduce tu nombre completo",
+    "nameError": "El nombre no puede estar vacío",
+    "phoneLabel": "Teléfono",
+    "phoneHint": "Introduce tu número de teléfono",
+    "phoneErrorEmpty": "El teléfono no puede estar vacío",
+    "phoneErrorInvalid": "Introduce solo números",
+    "submitButton": "Enviar",
+    "successMessage": "Formulario enviado con éxito"
+}

@@ -1,0 +1,12 @@
+{
+    "appTitle": "Accessible Form",
+    "nameLabel": "Name",
+    "nameHint": "Enter your full name",
+    "nameError": "Name cannot be empty",
+    "phoneLabel": "Phone",
+    "phoneHint": "Enter your phone number",
+    "phoneErrorEmpty": "Phone cannot be empty",
+    "phoneErrorInvalid": "Only numbers are allowed",
+    "submitButton": "Submit",
+    "successMessage": "Form submitted successfully"
+}

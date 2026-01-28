@@ -10,6 +10,7 @@ void main() {
   testWidgets('完整流程测试', (WidgetTester tester) async {
     // 1. 启动整个 App
     app.main();
+    
     await tester.pumpAndSettle(); // 等待启动动画完成
 
     // 2. 输入
@@ -18,7 +19,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // 3. 点击
-    await tester.tap(find.text('Enviar'));
+    await tester.tap(find.byKey(Key('submitBtn')));
     await tester.pumpAndSettle(); // 等待 SnackBar 消失和清空完成
 
     // 4. 验证清空
