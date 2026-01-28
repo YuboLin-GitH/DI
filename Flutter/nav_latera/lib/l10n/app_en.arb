@@ -1,0 +1,8 @@
+{
+  "sendButton": "Send",
+  "userName": "Username",
+  "email": "Email Address",
+  "nameHint": "Enter your name",
+  "emailHint": "Enter your email",
+  "submitHint": "Tap to submit the form"
+}

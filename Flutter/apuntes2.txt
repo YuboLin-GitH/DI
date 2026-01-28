@@ -1,0 +1,138 @@
+2.1. Tipos de datos y colecciones (数据类型与集合)
+Dart 是强类型语言，但它也很聪明（可以用 var 自动推断）。
+
+基础类型 (Primitivos)
+int, double: 数字。
+
+String: 文字。
+
+bool: 真/假。
+
+dynamic: 任意类型（慎用，尽量确定类型）。
+
+Dart
+void main() {
+  int edad = 25;                // 整数
+  double altura = 1.75;         // 小数
+  String nombre = 'Juan';       // 字符串
+  bool esEstudiante = true;     // 布尔值
+  
+  // 💡 final 和 const (不可变变量)
+  final now = DateTime.now();   // 运行时确定 (现在几点了？)
+  const pi = 3.14;              // 编译时确定 (永远是3.14)
+}
+集合 (Colecciones) - 重点！
+在 Flutter 里，你天天都要跟这三个打交道。
+
+1. List (列表): 有序，允许重复。比如：显示的商品列表。
+
+Dart
+List<String> frutas = ['Manzana', 'Pera', 'Manzana']; 
+
+print(frutas[0]); // 输出: Manzana
+frutas.add('Uva'); // 添加
+print(frutas.length); // 长度: 4
+2. Set (集合): 无序，不允许重复。比如：历史搜索记录（去重）。
+
+Dart
+Set<int> numeros = {1, 2, 3, 1, 1}; 
+
+print(numeros); // 输出: {1, 2, 3} (自动把重复的1去掉了)
+3. Map (映射/字典): 键值对 (Key-Value)。比如：存储用户信息，或者你的汇率转换表。
+
+Dart
+Map<String, double> conversionRates = {
+  'Km': 1.0,
+  'Metros': 1000.0,
+  'Millas': 0.6213
+};
+
+print(conversionRates['Millas']); // 输出: 0.6213
+2.2. Operadores y Control de flujo (运算符与流程控制)
+常用运算符
+除了加减乘除，这几个在 Flutter 里特别常用：
+
+Dart
+// 1. 三元运算符 (简化版 if-else)
+int edad = 18;
+String estado = edad >= 18 ? 'Adulto' : 'Menor'; 
+// 意思是：如果>=18，就是Adulto，否则是Menor
+
+// 2. 空安全运算符 (??)
+String? nombreUsuario; // 可能为 null
+String mostrar = nombreUsuario ?? 'Invitado'; 
+// 意思是：如果名字是 null，就显示 'Invitado'
+流程控制
+1. If / Else: 标准判断。
+
+Dart
+if (edad >= 18) {
+  print('Pasa');
+} else {
+  print('No pasa');
+}
+2. Switch: 多条件判断（非常适合配合 Enum 使用）。
+
+Dart
+String unidad = 'Km';
+switch (unidad) {
+  case 'Km':
+    print('Es kilómetros');
+    break; // 别忘了 break
+  case 'M':
+    print('Es metros');
+    break;
+  default:
+    print('Unidad desconocida');
+}
+3. For Loop: 循环（Flutter 构建列表时常用）。
+
+Dart
+List<String> dias = ['Lunes', 'Martes', 'Miércoles'];
+
+// 写法 A: 传统 for
+for (int i = 0; i < dias.length; i++) {
+  print(dias[i]);
+}
+
+// 写法 B: for-in (更推荐，更简洁)
+for (var dia in dias) {
+  print(dia);
+}
+2.3. Enumeraciones y Excepciones (枚举与异常)
+Enumeraciones (Enum)
+枚举就是“限制选项”。 比如你的转换器应用，单位只有几种（Km, M, Miles），用 String 容易写错字（比如写成 'km' 或 'Kilometro'），用 Enum 就不会错。
+
+Dart
+// 定义枚举
+enum Units { kilometers, meters, miles }
+
+void main() {
+  // 使用枚举
+  Units selectedUnit = Units.kilometers;
+
+  if (selectedUnit == Units.kilometers) {
+    print("Seleccionado: Km");
+  }
+}
+Excepciones (Try-Catch)
+异常处理就是“防止 App 崩溃”。 比如在转换器里，用户如果输入了 "abc" 而不是数字，double.parse("abc") 会报错，如果不抓取异常，App 就闪退了。
+
+Dart
+void main() {
+  String inputUsuario = "abc"; // 用户乱输
+  
+  try {
+    // 尝试执行危险代码
+    double numero = double.parse(inputUsuario);
+    print("Número es: $numero");
+    
+  } catch (e) {
+    // 如果出错了，执行这里
+    print("Error: No has introducido un número válido.");
+    // e 是错误信息
+  } finally {
+    // 不管成不成功，都会执行这里 (可选)
+    print("Intento finalizado");
+  }
+}

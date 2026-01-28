@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nav_latera/views/HomeScreen.dart';
-import 'package:nav_latera/views/ProfileScreen.dart';
+import 'package:nav_latera/views/transaccionesView.dart';
 import 'package:nav_latera/views/SettingsScreen.dart';
 
 
@@ -17,14 +17,14 @@ class _MainScreenState extends State<MainScreen> {
   // 页面列表
   final List<Widget> _screens = [
     const HomeScreen(),
-    const ProfileScreen(),
+    const transaccionesView(),
     const SettingsScreen(),
   ];
 
   // 标题列表（为了让 AppBar 标题随页面变化）
   final List<String> _titles = [
     "Home",
-    "Profile",
+    "Transactions",
     "Settings"
   ];
 
@@ -82,7 +82,7 @@ class _MainScreenState extends State<MainScreen> {
             // 3. 菜单项 - Profile
             ListTile(
               leading: const Icon(Icons.person),
-              title: const Text('Profile'),
+              title: const Text('Transactions'),
               selected: _selectedIndex == 1,
               selectedTileColor: Colors.blue.shade100,
               onTap: () => _onItemTapped(1),
