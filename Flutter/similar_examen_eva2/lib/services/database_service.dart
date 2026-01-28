@@ -1,5 +1,6 @@
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart' as p;
+import 'dart:io';
 
 /// Servicio singleton para manejar la base de datos SQLite.
 /// Cumple con el requisito: "Crea un servicio de base de datos para reutilizar código".
@@ -17,6 +18,10 @@ class DatabaseService {
   }
 
   Future<Database> _initDatabase() async {
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      sqfliteFfiInit();
+      databaseFactory = databaseFactoryFfi;
+    }
     final dbPath = await getDatabasesPath();
     final path = p.join(dbPath, 'conversor_exam.db');
 
