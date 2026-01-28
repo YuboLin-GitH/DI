@@ -1,81 +1,30 @@
+import 'package:actividad_repaso_examen_eva2_5/views/ThemeSwitcherScreen.dart';
+import 'package:actividad_repaso_examen_eva2_5/viewsmodels/ThemeViewModel.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    // 在最顶层注入 ViewModel
+    ChangeNotifierProvider(
+      create: (_) => ThemeViewModel(),
+      child: MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  bool isDarkTheme = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadTheme();
-  }
-
-  // Cargar el tema almacenado en SharedPreferences
-  Future<void> _loadTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      isDarkTheme = prefs.getBool('isDarkTheme') ?? false;
-    });
-  }
-
-  // Guardar el tema en SharedPreferences
-  Future<void> _saveTheme(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isDarkTheme', value);
-  }
-
-  // Alternar entre los temas
-  void _toggleTheme() {
-    setState(() {
-      isDarkTheme = !isDarkTheme;
-    });
-    _saveTheme(isDarkTheme);
-  }
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // 监听 ViewModel，因为这里决定了整个 App 是黑还是白
+    final themeVM = context.watch<ThemeViewModel>();
+
     return MaterialApp(
-      theme: isDarkTheme ? ThemeData.dark() : ThemeData.light(),
-      home: ThemeSwitcherScreen(
-        isDarkTheme: isDarkTheme,
-        toggleTheme: _toggleTheme,
-      ),
-    );
-  }
-}
-
-class ThemeSwitcherScreen extends StatelessWidget {
-  final bool isDarkTheme;
-  final VoidCallback toggleTheme;
-
-  ThemeSwitcherScreen({required this.isDarkTheme, required this.toggleTheme});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Configuración de Tema')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              isDarkTheme ? 'Tema Oscuro Activado' : 'Tema Claro Activado',
-              style: TextStyle(fontSize: 20),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(onPressed: toggleTheme, child: Text('Cambiar Tema')),
-          ],
-        ),
-      ),
+      debugShowCheckedModeBanner: false,
+      // 根据 ViewModel 的值动态切换 Theme
+      theme: themeVM.isDarkTheme ? ThemeData.dark() : ThemeData.light(),
+      home: ThemeSwitcherScreen(),
     );
   }
 }

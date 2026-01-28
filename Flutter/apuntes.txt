@@ -1,0 +1,77 @@
+para traducir
+
+
+在 pubspec.yaml
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations: # 1. 添加这个
+    sdk: flutter
+  intl: ^0.19.0 # 2. 添加这个
+  provider: ^6.0.0
+
+flutter:
+  generate: true # 3. 开启这个 (很重要！)
+  uses-material-design: true
+
+y ejecutar  ->  flutter pub get
+
+
+
+创建配置文件 l10n.yaml
+在项目根目录（和 pubspec.yaml 同级）新建一个文件叫 l10n.yaml。
+
+arb-dir: lib/l10n
+template-arb-file: app_es.arb
+output-localization-file: app_localizations.dart
+
+
+创建翻译文件 (.arb)
+在 lib 目录下新建文件夹 l10n，然后创建两个文件：
+lib/l10n/app_es.arb
+{
+    "appTitle": "Formulario Accesible",
+    "nameLabel": "Nombre",
+    "nameHint": "Introduce tu nombre completo",
+    "nameError": "El nombre no puede estar vacío",
+    "phoneLabel": "Teléfono",
+    "phoneHint": "Introduce tu número de teléfono",
+    "phoneErrorEmpty": "El teléfono no puede estar vacío",
+    "phoneErrorInvalid": "Introduce solo números",
+    "submitButton": "Enviar",
+    "successMessage": "Formulario enviado con éxito"
+}
+
+lib/l10n/app_en.arb
+
+{
+    "appTitle": "Accessible Form",
+    "nameLabel": "Name",
+    "nameHint": "Enter your full name",
+    "nameError": "Name cannot be empty",
+    "phoneLabel": "Phone",
+    "phoneHint": "Enter your phone number",
+    "phoneErrorEmpty": "Phone cannot be empty",
+    "phoneErrorInvalid": "Only numbers are allowed",
+    "submitButton": "Submit",
+    "successMessage": "Form submitted successfully"
+}
+
+修改 main.dart (开启多语言支持)
+
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart';
+
+
+
+localizationsDelegates: [
+        AppLocalizations.delegate, // 我们生成的代理
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('es'), // 西班牙语
+        Locale('en'), // 英语
+      ],
