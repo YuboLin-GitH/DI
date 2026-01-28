@@ -1,20 +1,20 @@
+import 'package:actividad_repaso_examen_eva2_4/viewmodels/NumbersViewModel.dart';
+import 'package:actividad_repaso_examen_eva2_4/views/EvenNumbersScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => NumbersViewModel(), // 注入 ViewModel
+      child: MyApp(),
+    ),
+  );
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
-    );
+    return MaterialApp(home: EvenNumbersScreen());
   }
 }
