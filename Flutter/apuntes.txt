@@ -83,3 +83,22 @@ localizationsDelegates: [
 生成文件 需要网络
 
 flutter gen-l10n 
+
+
+
+
+指令
+dart doc
+
+/// 服务类：负责处理数据库操作
+/// 
+/// 这是一个单例模式的类。
+class DatabaseService {
+
+  /// 插入一条交易记录
+  /// 
+  /// [row] 是一个 Map，包含了交易的具体数据
+  /// 返回插入的记录 ID
+  Future<int> insertTransaction(Map<String, dynamic> row) async {
+    // ...
+  }
