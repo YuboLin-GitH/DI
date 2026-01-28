@@ -1,5 +1,7 @@
 import 'package:actividad_repaso_examen_eva2_7/viewmodels/FormViewModel.dart';
+import 'package:actividad_repaso_examen_eva2_7/viewmodels/LanguageViewModel.dart';
 import 'package:actividad_repaso_examen_eva2_7/views/AccessibleFormScreen.dart';
+import 'package:actividad_repaso_examen_eva2_7/views/SettingsScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -7,8 +9,13 @@ import 'l10n/app_localizations.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => FormViewModel(),
+    MultiProvider(
+      providers: [
+        // 1. 表单逻辑
+        ChangeNotifierProvider(create: (_) => FormViewModel()),
+        // 2. 语言逻辑 (新增!)
+        ChangeNotifierProvider(create: (_) => LanguageViewModel()),
+      ],
       child: MyApp(),
     ),
   );
@@ -17,6 +24,8 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final languageVM = context.watch<LanguageViewModel>();
+    
     return MaterialApp(
       localizationsDelegates: [
         AppLocalizations.delegate, // 我们生成的代理
@@ -28,8 +37,9 @@ class MyApp extends StatelessWidget {
         Locale('es'), // 西班牙语
         Locale('en'), // 英语
       ],
-      home: AccessibleFormScreen(),
-      locale: Locale('es'),
+      locale: languageVM.appLocale,
+      home: SettingsScreen(),
+      
       );
   }
 }

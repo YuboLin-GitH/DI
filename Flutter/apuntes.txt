@@ -78,3 +78,8 @@ localizationsDelegates: [
         Locale('es'), // 西班牙语
         Locale('en'), // 英语
       ],
+
+ 
+生成文件 需要网络
+
+flutter gen-l10n 
