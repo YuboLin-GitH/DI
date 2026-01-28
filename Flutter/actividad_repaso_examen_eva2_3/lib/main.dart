@@ -1,20 +1,23 @@
+import 'package:actividad_repaso_examen_eva2_3/viewmodels/ExceptionViewModel.dart';
+import 'package:actividad_repaso_examen_eva2_3/views/ExceptionScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(
+    // 在这里注入 ViewModel
+    ChangeNotifierProvider(
+      create: (_) => ExceptionViewModel(),
+      child: MyApp(),
+    ),
+  );
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+    return MaterialApp(
+      home: ExceptionScreen(),
     );
   }
 }

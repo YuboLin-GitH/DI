@@ -1,4 +1,4 @@
-name: actividad_repaso_examen_eva2_3
+name: actividad_repaso_examen_eva2_4
 description: "A new Flutter project."
 publish_to: 'none'
 version: 0.1.0
@@ -9,7 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^6.1.5+1
 
 dev_dependencies:
   flutter_test:
