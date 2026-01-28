@@ -1,0 +1,15 @@
+{
+  "appTitle": "Conversor Examen",
+  "menuConverter": "Conversor",
+  "menuTransactions": "Transacciones",
+  "menuSettings": "Ajustes",
+  "labelValue": "Valor",
+  "hintValue": "Introduce el valor",
+  "btnConvert": "Convertir y Guardar",
+  "msgSuccess": "¡Transacción guardada!",
+  "msgError": "Entrada inválida",
+  "labelDarkMode": "Modo Oscuro",
+  "labelLanguage": "Idioma",
+  "labelTextSize": "Tamaño de Texto",
+  "emptyHistory": "No hay transacciones"
+}

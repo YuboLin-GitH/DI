@@ -1,0 +1,15 @@
+{
+  "appTitle": "Exam Converter",
+  "menuConverter": "Converter",
+  "menuTransactions": "Transactions",
+  "menuSettings": "Settings",
+  "labelValue": "Value",
+  "hintValue": "Enter value",
+  "btnConvert": "Convert & Save",
+  "msgSuccess": "Transaction saved!",
+  "msgError": "Invalid input",
+  "labelDarkMode": "Dark Mode",
+  "labelLanguage": "Language",
+  "labelTextSize": "Text Size",
+  "emptyHistory": "No transactions yet"
+}
