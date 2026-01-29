@@ -121,7 +121,7 @@ class _GestionScreenState extends State<GestionScreen> {
                          SnackBar(content: Text("Libro añadido!!!")),
                        );
                        
-                       gestionvm.insertLibro(valorAutor.text, valorAutor.text, _generoSeleccionada.toString(), valorEstado, "date");
+                       gestionvm.insertLibro(valorTitulo.text, valorAutor.text, _generoSeleccionada.toString(), valorEstado);
                     }
                   },
 

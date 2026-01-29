@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onTap: () => _onItemTapped(0),
               selected: _selectedIndex == 0,
             ),
-            Spacer(),
+            const SizedBox(height: 20),
             ListTile(
               leading: Icon(Icons.library_books),
               title: Text(l10n.tituloListado),

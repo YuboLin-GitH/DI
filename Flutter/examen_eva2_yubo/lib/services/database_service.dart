@@ -1,3 +1,4 @@
+import 'package:examen_eva2_yubo/model/libroModel.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart' as p;
 import 'dart:io';
@@ -52,28 +53,22 @@ class DatabaseService {
 
 
   /// Inserta una nuevo libro en la BBDD.
-  Future<int> insertLibro(String title, String author, String genre, int status, String date) async {
-    final fechaActual = DateTime.now();
-    final String fechaString =
-        '${fechaActual.year.toString().padLeft(4, '0')}-'
-        '${fechaActual.month.toString().padLeft(2, '0')}-'
-        '${fechaActual.day.toString().padLeft(2, '0')} ';
+  Future<int> insertLibro(Libromodel libro) async {
     final db = await database;
-    return db.insert('books', {
-      'title': title,
-      'author': author,
-      'genre': genre,
-      'status': status,
-      'fecha': fechaString,
-    });
- 
+    // 直接调用 libro.toMap()，简单干净！
+    return db.insert('books', libro.toMap());
   }
 
 
   /// Obtiene todas los libros ordenadas por ID descendente (más recientes primero).
-  Future<List<Map<String, dynamic>>> getLibros() async {
+  Future<List<Libromodel>> getLibros() async {
     final db = await database;
-    return await db.query('books', orderBy: 'id DESC');
+    final List<Map<String, dynamic>> maps = await db.query('books', orderBy: 'id DESC');
+
+    // 把 Map 列表转换成 Libromodel 列表
+    return List.generate(maps.length, (i) {
+      return Libromodel.fromMap(maps[i]);
+    });
   }
 
   /// Elimina una libros por su ID.
@@ -82,6 +77,6 @@ class DatabaseService {
     await db.delete('books', where: 'id = ?', whereArgs: [id]);
   }
 
-  Future query(String s) async {}
+  
   
 }

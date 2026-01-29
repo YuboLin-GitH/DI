@@ -11,20 +11,32 @@ class ListadoScreen extends StatefulWidget {
 }
 
 class _ListadoScreenState extends State<ListadoScreen> {
-  final DatabaseService _databaseService = DatabaseService();
-  
+
+  @override
+  void initState() {
+    super.initState();
+    // 页面初始化时，加载数据！否则列表是空的
+    // 使用 PostFrameCallback 确保在构建完成后加载
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<GestionViewModel>().loadDatos();
+    });
+  }
 
   
   @override
   Widget build(BuildContext context) {
-    final gestionvm = context.read<GestionViewModel>();
+    final gestionvm = context.watch<GestionViewModel>();
     final libroLista = gestionvm.libros;
+
+    if (libroLista.isEmpty) {
+      return Center(child: Text("No hay libro"));
+    }
 
     return ListView.builder(
               itemCount: libroLista.length,
               itemBuilder: (context, index) {
-                final gestoLibros = libroLista[index];
-                final esDisponible = gestoLibros['status'] == 0;
+                final libro = libroLista[index];
+                final esDisponible = libro.status == 0;
 
                 final Color transaccionColor = esDisponible
                     ? Colors.red
@@ -35,12 +47,12 @@ class _ListadoScreenState extends State<ListadoScreen> {
 
                 return ListTile(
                   leading: Icon(transaccionIcon, color: transaccionColor),
-                  title: Text(gestoLibros['author']),
+                  title: Text(libro.title),
                   subtitle: Text(
-                    "${gestoLibros['author']} - ${gestoLibros['title']} ",
+                    ("${libro.author} - ${libro.genre}"),
                   ),
 
-                  trailing: Text((gestoLibros['data'])),
+                  trailing: Text((libro.date)),
                 );
               },
             );

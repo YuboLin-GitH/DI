@@ -1,4 +1,5 @@
 
+import 'package:examen_eva2_yubo/model/libroModel.dart';
 import 'package:examen_eva2_yubo/services/database_service.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -7,23 +8,38 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 class GestionViewModel extends ChangeNotifier {
   final DatabaseService _dbService = DatabaseService();
   
-  List<Map<String, dynamic>> _libros = [];
+  List<Libromodel> _libros = [];
 
-  List<Map<String, dynamic>> get libros => _libros;
+  List<Libromodel> get libros => _libros;
 
 
   Future<void> loadDatos() async {
-    final datos = await _dbService.query('books');
+    final datos = await _dbService.getLibros();
     _libros = datos;
     notifyListeners();
   }
 
-  Future<int> insertLibro(String title, String author, String genre, int status, String date) async {
+  Future<int> insertLibro(String title, String author, String genre, int status) async {
+    // 自动生成当前时间
+    final now = DateTime.now();
+    final dateString = "${now.day}/${now.month}/${now.year}";
+
+    // 🔥 创建 Model 对象 (装箱)
+    final nuevoLibro = Libromodel(
+      title: title,
+      author: author,
+      genre: genre,
+      status: status,
+      date: dateString,
+    );
+
+    // 把对象传给 Service
+    final result = await _dbService.insertLibro(nuevoLibro);
     
-    return await _dbService.insertLibro(title, author, genre, status, date);
-  
+    // 插入后记得刷新列表
+    await loadDatos(); 
+    return result;
   }
-  
 
 
 
