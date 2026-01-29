@@ -1,0 +1,13 @@
+{
+    "appTitle": "Conversor",
+    "menu": "Menú",
+    "transactions": "Transacciones",
+    "settings": "Ajustes",
+    "darkTheme": "Tema Oscuro",
+    "language": "Idioma",
+    "textSize": "Tamaño de Texto",
+    "convertSave": "Convertir y guardar",
+    "result": "Resultado",
+    "enterValue": "Introduce un valor",
+    "savedSuccess": "Transacción guardada exitosamente"
+}

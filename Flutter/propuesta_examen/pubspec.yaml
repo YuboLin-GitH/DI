@@ -1,11 +1,11 @@
-name: examen_eva2_yubo
+name: propuesta_examen
 description: "A new Flutter project."
 publish_to: 'none'
 version: 0.1.0
 
 environment:
   sdk: ^3.9.2
- 
+
 dependencies:
   flutter:
     sdk: flutter
@@ -18,7 +18,7 @@ dependencies:
   flutter_gen: ^5.12.0
   sqflite: ^2.4.1
   path: ^1.9.0
- 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -27,8 +27,7 @@ dev_dependencies:
     sdk: flutter
   mockito: ^5.4.5
   build_runner: ^2.4.14
- 
+
 flutter:
-  uses-material-design: true
   generate: true
- 
+  uses-material-design: true
