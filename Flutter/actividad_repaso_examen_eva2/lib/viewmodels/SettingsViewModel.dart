@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SettingsViewModel extends ChangeNotifier {
   bool _isDark = false;
   double _textSize = 1.0;
-  Locale _currentLocale = const Locale('es'); // 默认西班牙语
+  Locale _currentLocale = const Locale('es'); 
 
   bool get isDark => _isDark;
   double get textSize => _textSize;

@@ -13,14 +13,14 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false, // Para quitar la marca de debug
       home: Scaffold(
         appBar: AppBar(title: Text("Formulario de Registro"),),
         body: Form(
-          key: _formKey,
+          key: formKey,
           child: Column(
             children: [
               TextFormField(
@@ -55,7 +55,7 @@ class MainApp extends StatelessWidget {
                   }, 
               ),
               ElevatedButton(onPressed: (){
-                if (_formKey.currentState!.validate()) {
+                if (formKey.currentState!.validate()) {
                    
                       print('✅ Formulario enviado correctamente!');
                     }
