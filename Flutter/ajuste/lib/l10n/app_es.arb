@@ -1,0 +1,17 @@
+{
+  "sendButton": "Enviar",
+  "userName": "Nombre de usuario",
+  "email": "Correo electrónico",
+  "nameHint": "Introduce tu nombre",
+  "emailHint": "Introduce tu correo electrónico",
+  "submitHint": "Pulsa para enviar el formulario",
+  "title": "App Estudiantes",
+  "labelName": "Nombre",
+  "labelScore": "Puntuación",
+  "btnSave": "Guardar Estudiante",
+  "msgError": "Por favor escribe texto",
+  "settings": "Ajustes",
+  "darkMode": "Modo Oscuro",
+  "textSize": "Tamaño de Texto",
+  "language": "Idioma"
+}

@@ -1,0 +1,17 @@
+{
+  "sendButton": "Send",
+  "userName": "Username",
+  "email": "Email Address",
+  "nameHint": "Enter your name",
+  "emailHint": "Enter your email",
+  "submitHint": "Tap to submit the form",
+  "title": "Student App",
+  "labelName": "Name",
+  "labelScore": "Score",
+  "btnSave": "Save Student",
+  "msgError": "Please enter text",
+  "settings": "Settings",
+  "darkMode": "Dark Mode",
+  "textSize": "Text Size",
+  "language": "Language"
+}
