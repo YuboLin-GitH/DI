@@ -68,7 +68,7 @@ class MainApp extends StatelessWidget {
         routes: {
           //'/': (context) => MainPage(),
           '/settings': (context) => Settings(),
-          '/converter': (context) => ConverterPage(),
+          '/converter': (context) => ConverterPage(database: database),
           '/transactions': (context) => TransactionsPage(database: database),
         },
         debugShowCheckedModeBanner: false,

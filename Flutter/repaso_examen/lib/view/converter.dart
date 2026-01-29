@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:repaso_examen/l10n/app_localizations.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'drawer_app.dart';
 
 class ConverterPage extends StatefulWidget {
-  const ConverterPage({super.key});
+  final Database database;
+  const ConverterPage({super.key, required this.database});
 
   @override
   State<ConverterPage> createState() => _ConverterPageState();
@@ -30,17 +32,34 @@ class _ConverterPageState extends State<ConverterPage> {
     DropdownMenuItem(value: "mll", child: Text("Millas")),
   ];
 
-  void calcularConversor() {
+  void calcularConversor() async{
     // OBTIENE EL MAPA DE TASAS DE CONVERSIÓN SEGÚN EL VALOR DE 'firstValue'
     Map<String, double> mapaOrigen = conversionRates[firstValue]!;
 
     // OBTIENE EL FACTOR DE CONVERSIÓN PARA EL VALOR DE 'secondValue'
     double valorDestino = mapaOrigen[secondValue]!;
 
+
+    double resultadoCalculado = double.parse(valorConversor.text) * valorDestino;
     // ACTUALIZA EL ESTADO CON EL RESULTADO DE LA CONVERSIÓN
     setState(() {
-      totalConversor = double.parse(valorConversor.text) * valorDestino;
+      totalConversor = resultadoCalculado;
     });
+    try {
+      await widget.database.insert(
+        'conversiones', // 表名
+        {
+          // 对应 main.dart 里创建的字段
+          'valor': double.parse(valorConversor.text), 
+          'origen': firstValue,
+          'destino': secondValue,
+          'resultado': resultadoCalculado,
+        },
+      );
+      print("数据已保存！"); // 控制台打印一下，方便调试
+    } catch (e) {
+      print("保存失败: $e");
+    }
   }
 
   @override
