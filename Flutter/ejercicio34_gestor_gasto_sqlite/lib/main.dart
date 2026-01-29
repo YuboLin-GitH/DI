@@ -92,6 +92,9 @@ class Formulario extends StatefulWidget {
   State<Formulario> createState() => _FormularioState();
 }
 
+
+
+
 class _FormularioState extends State<Formulario> {
   final dineroController = TextEditingController();
   final List<bool> _selectedtipo = <bool>[true, false];

@@ -45,18 +45,46 @@ class GalleryPage extends StatelessWidget {
           padding: EdgeInsets.all(30),
           // AÑADIR UN PADDING A LAS FOTOS
 
-          children: const <Widget>[
-            PlantillaImagen("gato1.jpg"),
-            PlantillaImagen("frontalPhotoShrek.jpeg"),
-            PlantillaImagen("homer.jpg"),
-            PlantillaImagen("Michis.jpg"),
-            PlantillaImagen("shrekPhoto.jpg"),
-            PlantillaImagen("gato1.jpg"),
-            PlantillaImagen("frontalPhotoShrek.jpeg"),
-            PlantillaImagen("homer.jpg"),
-            PlantillaImagen("Michis.jpg"),
-            PlantillaImagen("shrekPhoto.jpg"),
-          ],
+          children: [
+        // 1. Switch Modo Oscuro
+        SwitchListTile(
+          title: Text(l10n.modoOscuro),
+          value: settingsVM.isDarkTheme,
+          onChanged: (val) => settingsVM.toggleTheme(val),
+        ),
+        Divider(),
+
+        CartaWidget(titulo: l10n.idioma),
+        // 2. Dropdown Idioma
+        ListTile(
+          title: Text(l10n.idioma),
+          trailing: DropdownButton<Locale>(
+            value: settingsVM.appLocale,
+            items: [
+              DropdownMenuItem(value: Locale('es'), child: Text('Español')),
+              DropdownMenuItem(value: Locale('en'), child: Text('English')),
+            ],
+            onChanged: (val) {
+              if (val != null) settingsVM.changeLanguage(val);
+            },
+          ),
+        ),
+        Divider(),
+
+        // 3. Slider Tamaño Texto
+        ListTile(
+          title: Text(l10n.tamanioTexto),
+          subtitle: Slider(
+            value: settingsVM.textScaleFactor,
+            min: 0.8,
+            max: 2.0,
+            divisions: 6,
+            label: settingsVM.textScaleFactor.toString(),
+            onChanged: (val) => settingsVM.changeTextScale(val),
+          ),
+        ),
+        Center(child: Text("Preview Text Size", style: TextStyle(fontSize: 16))),
+      ],
         ),
       ),
     );

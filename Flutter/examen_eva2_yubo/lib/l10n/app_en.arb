@@ -1,0 +1,16 @@
+{
+  "tituloGestion": "Gestion",
+  "tituloListado": "List",
+  "tituloAjuste": "Settings",
+  "nuevolibro": "New Book",
+  "titulo": "Title",
+  "autor": "Author",
+  "estado": "State",
+  "disponible": "DISPONIBLE",
+  "prestado": "PRESTADO",
+  "btGuarda": "Save",
+  "modoClaro": "clase theme",
+  "modoOscuro": "Dark theme",
+  "idioma": "Language",
+  "tamanioTexto": "Text size"
+}

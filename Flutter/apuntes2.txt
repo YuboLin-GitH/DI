@@ -24,6 +24,9 @@ void main() {
 集合 (Colecciones) - 重点！
 在 Flutter 里，你天天都要跟这三个打交道。
 
+
+
+
 1. List (列表): 有序，允许重复。比如：显示的商品列表。
 
 Dart

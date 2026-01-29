@@ -1,20 +1,62 @@
+import 'package:examen_eva2_yubo/services/database_service.dart';
+import 'package:examen_eva2_yubo/viewmodels/gestion_view_model.dart';
+import 'package:examen_eva2_yubo/viewmodels/settings_view_model.dart';
+import 'package:examen_eva2_yubo/views/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'l10n/app_localizations.dart';
 
-void main() {
-  runApp(const MainApp());
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DatabaseService().database;
+
+  runApp(
+    // Requisito: Usa MultiProvider
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SettingsViewModel()),
+        ChangeNotifierProvider(create: (_) => GestionViewModel()),
+      
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
+class MyApp extends StatelessWidget {
+  
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+    // Escuchar cambios de configuración
+    final settings = context.watch<SettingsViewModel>();
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Examen EVA2',
+
+      // Configuración de Idioma (intl)
+      locale: settings.appLocale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+
+      // Configuración de Tema (Claro/Oscuro)
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: settings.isDarkTheme ? ThemeMode.dark : ThemeMode.light,
+
+      // Requisito: Centraliza cambios de escala con MediaQuery
+      builder: (context, child) {
+        return MediaQuery(
+          // Sobrescribe el textScaler globalmente
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(settings.textScaleFactor)),
+          child: child!,
+        );
+      },
+
+      home: HomeScreen(),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:ejercicio30_nav_pestana/views/SettingsScreen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -121,17 +122,3 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-// Pantalla Ajustes: contenido simple centrado
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        "Pantalla de Ajustes",
-        style: TextStyle(fontSize: 24),
-      ),
-    );
-  }
-}

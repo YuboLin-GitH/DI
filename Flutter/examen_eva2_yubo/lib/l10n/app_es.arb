@@ -1,0 +1,16 @@
+{
+  "tituloGestion": "Gestión",
+  "tituloListado": "Listado",
+  "tituloAjuste": "Ajustes",
+  "nuevolibro": "Nuevo libro",
+  "titulo": "Titulo",
+  "autor": "Autor",
+  "estado": "Estado",
+  "disponible": "DISPONIBLE",
+  "prestado": "PRESTADO",
+  "btGuarda": "Guarda",
+  "modoClaro": "Modo Claro",
+  "modoOscuro": "Modo Oscuro",
+  "idioma": "Idioma",
+  "tamanioTexto": "Tamaño de Texto"
+}
