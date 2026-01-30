@@ -1,32 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ThemeProvider extends ChangeNotifier {
-  bool _esClaro = false;
-  bool get esClaro => _esClaro;
-  ThemeMode get themeMode => _esClaro ? ThemeMode.light : ThemeMode.dark;
+class SettingsViewModel extends ChangeNotifier {
+  bool _esOscuro = false;
+  bool get esOscuro => _esOscuro;
+  ThemeMode get themeMode => _esOscuro ? ThemeMode.dark : ThemeMode.light;
 
   static const String _fontSizeKey = 'fontSize';
+  static const String _themeKey = 'esOscuro';
+  
+  
   double _fontSize = 12.0;
 
   double get fontSize => _fontSize;
 
-  ThemeProvider() {
+  SettingsViewModel() {
     _loadFromPrefs();
   }
 
   Future<void> _loadFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    _esClaro = prefs.getBool('esClaro') ?? false;
+    _esOscuro = prefs.getBool(_themeKey) ?? false;
     _fontSize = prefs.getDouble(_fontSizeKey) ?? 12.0;
     notifyListeners();
   }
 
   Future<void> toggleTheme() async {
-    _esClaro = !_esClaro;
+    _esOscuro = !_esOscuro;
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('esClaro', _esClaro);
+    await prefs.setBool(_themeKey, _esOscuro);
   }
 
   Future<void> setFontSizeScale(double newScale) async {

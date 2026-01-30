@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:proyecto2eval_yubo/providers/db_provider.dart';
-
-
-
+import 'package:proyecto2eval_yubo/viewmodels/library_view_model.dart';
 
 // PANTALLAS Libreria
 
@@ -24,53 +21,85 @@ class LibreriaScreen extends StatefulWidget {
 class _LibreriaScreenState extends State<LibreriaScreen> {
   @override
   Widget build(BuildContext context) {
-    final bbddProvider = Provider.of<BBDDProvider>(context);
-    final libros = bbddProvider.todoLibros;
+    final libraryVM = Provider.of<LibraryViewModel>(context);
+// Utilice el nuevo getter que escribimos en el proveedor
+    final libros = libraryVM.librosFiltrados;
 
     return Scaffold(
-      appBar: AppBar(title: Text("Librería"), 
+      appBar: AppBar(
+        
+        title: const Text("Librería"),
         actions: [
-          DropdownButton(
+          // Estado de filtrado para proveedores vinculados
+          DropdownButton<String>(
+            value: libraryVM.filtroEstado,
+            dropdownColor: Theme.of(context).primaryColor,
+            icon: const Icon(Icons.filter_list, color: Colors.white),
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            underline: Container(), 
             items: const [
-              DropdownMenuItem(value: 'todo', child: Text('Todos')),
-              DropdownMenuItem(value: 'leido', child: Text('Leido')),
-              DropdownMenuItem(value: 'pendiente', child: Text('Pendiente')),
+              DropdownMenuItem(value: 'todos', child: Text('Todos')),
+              DropdownMenuItem(value: 'leido', child: Text('Leídos')),
+              DropdownMenuItem(value: 'pendiente', child: Text('Pendientes')),
             ],
-            onChanged: (value) {
-              _fitraLibro(value.toString());
+            onChanged: (val) {
+              if (val != null) libraryVM.setFiltroEstado(val);
             },
-            value: _filtroEstado,
           ),
-        ],),
+
+          const SizedBox(width: 10),
+
+          DropdownButton<String>(
+            value: libraryVM.filtroFavorito,
+            dropdownColor: Theme.of(context).primaryColor,
+            icon: const Icon(Icons.favorite, color: Colors.redAccent), 
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            underline: Container(),
+            items: const [
+              DropdownMenuItem(value: 'todos', child: Text('Todos')),
+              DropdownMenuItem(value: 'favoritos', child: Text('Favoritos')),
+            ],
+            onChanged: (val) {
+              if (val != null) libraryVM.setFiltroFavorito(val);
+            },
+          ),
+          
+          const SizedBox(width: 15),
+
+        ],
+      ),
       body: libros.isEmpty
-          ? Center(child: Text("No hay libro"))
+          ? const Center(child: Text("No hay libros"))
           : ListView.builder(
               itemCount: libros.length,
               itemBuilder: (context, index) {
                 final libro = libros[index];
                 return ListTile(
                   leading: const Icon(Icons.book),
-                  title: Text(libro['titulo']),
-                  subtitle: Text(libro['autor']),
+                  title: Text(libro.titulo), 
+                  subtitle: Text(libro.autor),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                     // Botón favorito
                       IconButton(
                         icon: Icon(
-                          libro['gusta'] == 1
+                          libro.gusta == 1
                               ? Icons.favorite
                               : Icons.favorite_border,
-                          color: libro['gusta'] == 1 ? Colors.red : null,
+                          color: libro.gusta == 1 ? Colors.red : null,
                         ),
                         onPressed: () {
-                          bbddProvider.toggleGusta(libro['id'], libro['gusta']);
+                          //valores nulos porque id es un int.
+                          if (libro.id != null) {
+                            libraryVM.toggleGusta(libro.id!, libro.gusta);
+                          }
                         },
                       ),
-
                       const SizedBox(width: 10),
-
-                      DropdownButton(
-                      
+                      // 状态下拉
+                      DropdownButton<String>(
+                        value: libro.leido == 1 ? 'leido' : 'pendiente',
                         items: const [
                           DropdownMenuItem(
                             value: 'pendiente',
@@ -82,17 +111,20 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
                           ),
                         ],
                         onChanged: (value) {
-                          // Cambio de estado del proveedor
-                          bbddProvider.toggleLeido(libro['id'], libro['leido']);
+                          if (libro.id != null) {
+                            libraryVM.toggleLeido(libro.id!, libro.leido);
+                          }
                         },
-                        value: libro['leido'] == 1 ? 'leido' : 'pendiente',
                       ),
-
                       const SizedBox(width: 10),
-
+                      // Botón eliminar
                       IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () => bbddProvider.deleteLibro(libro['id']),
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          if (libro.id != null) {
+                            libraryVM.deleteLibro(libro.id!);
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -100,55 +132,125 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
               },
             ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          _mostrarFormulario(context, bbddProvider);
-        },
+        onPressed: () => _mostrarFormulario(context, libraryVM),
         icon: const Icon(Icons.add),
         label: const Text("Añadir Libro"),
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       ),
     );
   }
 
-  /// Muestra un diálogo emergente para introducir los datos de un nuevo libro.
-  void _mostrarFormulario(BuildContext context, BBDDProvider provider) {
+  void _mostrarFormulario(BuildContext context, LibraryViewModel vm) {
     final TextEditingController tituloController = TextEditingController();
     final TextEditingController autorController = TextEditingController();
+    final TextEditingController portadaController = TextEditingController();
+
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Añadir nuevo libro"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: tituloController,
-              decoration: const InputDecoration(labelText: "Título"),
-            ),
-            TextField(
-              controller: autorController,
-              decoration: const InputDecoration(labelText: "Autor"),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancelar"),
-          ),
-          FilledButton(
-            onPressed: () {
-              // Validación simple: ambos campos deben tener texto
-              if (tituloController.text.isNotEmpty &&autorController.text.isNotEmpty) {
-                provider.addLibro(tituloController.text, autorController.text);
-                Navigator.pop(context);
-              }
-            },
-            child: const Text("Guardar"),
-          ),
-        ],
-      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text("Añadir nuevo libro"),
+              content: SizedBox(
+                width: 400,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                  // Entrada de título 
+                    TextField(
+                      controller: tituloController,
+                      decoration: const InputDecoration(
+                        labelText: "Título",
+                        prefixIcon: Icon(Icons.title),
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    
+                  // Entrada del autor
+                    TextField(
+                      controller: autorController,
+                      decoration: const InputDecoration(
+                        labelText: "Autor",
+                        prefixIcon: Icon(Icons.person),
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    
+                    //  Ingrese el enlace de la portada (con oyente)
+                    TextField(
+                      controller: portadaController,
+                      decoration: const InputDecoration(
+                        labelText: "URL de Portada (Imagen)",
+                        hintText: "https://ejemplo.com/foto.jpg",
+                        prefixIcon: Icon(Icons.image),
+                        border: OutlineInputBorder(),
+                      ),
+                    // Actualice la interfaz para mostrar una imagen de vista previa mientras el usuario escribe.  
+                      onChanged: (value) {
+                        setState(() {}); 
+                      },
+                    ),
+                    
+                    const SizedBox(height: 15),
+
+                   // Área de vista previa de la imagen
+                    Container(
+                      height: 150,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: portadaController.text.isNotEmpty
+                          ? Image.network(
+                              portadaController.text,
+                              fit: BoxFit.cover,
+                              errorBuilder: (ctx, err, stack) => const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.broken_image, color: Colors.red),
+                                  Text("Error URL", style: TextStyle(fontSize: 10)),
+                                ],
+                              ),
+                            )
+                          : const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.image_search, size: 40, color: Colors.grey),
+                                Text("Sin imagen", style: TextStyle(fontSize: 10, color: Colors.grey)),
+                              ],
+                            ),
+                    ),
+                  ],
+                ),
+              ),),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Cancelar"),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    if (tituloController.text.isNotEmpty && autorController.text.isNotEmpty) {
+                      vm.addLibro(
+                        tituloController.text, 
+                        autorController.text,
+                        portadaController.text //Enviar el enlace de la imagen
+                      );
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Text("Guardar"),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }

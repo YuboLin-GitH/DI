@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:proyecto2eval_yubo/providers/db_provider.dart';
+import 'package:proyecto2eval_yubo/viewmodels/library_view_model.dart';
 //import 'package:proyecto2eval_yubo/providers/theme_provider.dart';
 
 
@@ -20,8 +20,8 @@ class _MisLibrosScreenState extends State<MisLibrosScreen> {
   @override
   Widget build(BuildContext context) {
     // Obtener datos del proveedor
-    final bbddProvider = Provider.of<BBDDProvider>(context);
-    final libros = bbddProvider.misLibros;
+    final libraryVM = Provider.of<LibraryViewModel>(context);
+    final libros = libraryVM.misLibros;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Mis Libros")),
@@ -53,37 +53,38 @@ class _MisLibrosScreenState extends State<MisLibrosScreen> {
         itemBuilder: (context, index) {
           final libro = libros[index];
           return Card(
-            elevation: 2,
+            elevation: 5,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             clipBehavior: Clip.antiAlias,
             child: Stack(
               children: [
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Expanded(
-                      child: Container(
-                        color: Theme.of(context).colorScheme.primaryContainer,
-                        child: const Center(child: Icon(Icons.book, size: 40)),
-                      ),
+                      child: libro.portada.isNotEmpty
+                          ? Image.network(
+                              libro.portada, 
+                              fit: BoxFit.cover, // La imagen llena el espacio de arriba
+                             // Si el enlace no es válido, muestra un marcador de error.
+                              errorBuilder: (context, error, stackTrace) => 
+                                  const Icon(Icons.broken_image, size: 50),
+                            )
+                          : Container(
+                              color: Colors.blueGrey[100],
+                              child: const Icon(Icons.book, size: 50),
+                            ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            libro['titulo'],
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            libro['autor'],
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                        Text(libro.titulo, 
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          maxLines: 1, overflow: TextOverflow.ellipsis),
+                        Text(libro.autor, 
+                          style: const TextStyle(fontSize: 12),
+                          maxLines: 1, overflow: TextOverflow.ellipsis),
                         ],
                       ),
                     ),
@@ -91,12 +92,12 @@ class _MisLibrosScreenState extends State<MisLibrosScreen> {
                 ),
 
                 Positioned(
-                  top: 4,
-                  right: 4,
+                  top: 0,
+                  right: 0,
                   child: IconButton(
                     icon: const Icon(Icons.favorite, color: Colors.red),
                     onPressed: () {
-                      bbddProvider.toggleGusta(libro['id'], libro['gusta']);
+                      libraryVM.toggleGusta(libro.id!, libro.gusta);
                     },
                   ),
                 ),

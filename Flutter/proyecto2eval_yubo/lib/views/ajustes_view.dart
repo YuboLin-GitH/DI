@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:proyecto2eval_yubo/providers/theme_provider.dart';
+import 'package:proyecto2eval_yubo/viewmodels/settings_view_model.dart';
 
 
 /// Pantalla de ajustes de la aplicación.
@@ -18,10 +18,11 @@ class AjustesScreen extends StatefulWidget {
 class _AjustesScreenState extends State<AjustesScreen> {
   @override
   Widget build(BuildContext context) {
-    final themeProvider = context.watch<ThemeProvider>();
-    final esClaro = context.watch<ThemeProvider>().esClaro;
-    final currentScale = themeProvider.fontSize;
+    final settingsVM = context.watch<SettingsViewModel>();
+    final esOscuro = settingsVM.esOscuro;
+    final currentScale = settingsVM.fontSize;
     return Scaffold(
+      appBar: AppBar(title: const Text("Ajustes")),
       body: ListView(
         children: [
           Container(
@@ -39,10 +40,10 @@ class _AjustesScreenState extends State<AjustesScreen> {
             ),
             child: ListTile(
               leading: Icon(Icons.dark_mode),
-              title: Text("Tema claro"),
+              title: Text("Tema Oscuro"),
               trailing: Switch(
-                onChanged: (_) => context.read<ThemeProvider>().toggleTheme(),
-                value: esClaro,
+                onChanged: (_) => context.read<SettingsViewModel>().toggleTheme(),
+                value: settingsVM.esOscuro,
               ),
               contentPadding: EdgeInsets.all(10),
             ),
@@ -71,7 +72,7 @@ class _AjustesScreenState extends State<AjustesScreen> {
                 divisions: 4,
                 value: currentScale,
                 onChanged: (value) {
-                  themeProvider.setFontSizeScale(value);
+                  settingsVM.setFontSizeScale(value);
                 },
               ),
               contentPadding: EdgeInsets.all(10),
