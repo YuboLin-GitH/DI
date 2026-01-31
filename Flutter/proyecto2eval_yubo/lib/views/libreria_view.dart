@@ -100,7 +100,7 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
               });
             },
           ),
-
+          const SizedBox(width: 20),
           if (!_isSearching) ...[
           // Estado de filtrado para proveedores vinculados
           DropdownButton<String>(
@@ -119,7 +119,7 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
             },
           ),
 
-          const SizedBox(width: 10),
+          const SizedBox(width: 15),
 
           DropdownButton<String>(
             value: libraryVM.filtroFavorito,
