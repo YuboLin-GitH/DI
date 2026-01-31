@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:proyecto2eval_yubo/l10n/app_localizations.dart';
 import 'package:proyecto2eval_yubo/viewmodels/library_view_model.dart';
 
 // PANTALLAS Libreria
@@ -19,32 +20,35 @@ class LibreriaScreen extends StatefulWidget {
 }
 
 class _LibreriaScreenState extends State<LibreriaScreen> {
+
+  bool _isSearching = false;
+  final TextEditingController _searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final libraryVM = Provider.of<LibraryViewModel>(context);
-// Utilice el nuevo getter que escribimos en el proveedor
     final libros = libraryVM.librosFiltrados;
-
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
 
         leading: IconButton(
           icon: const Icon(Icons.playlist_add_circle, color: Colors.white, size: 30),
-          tooltip: "Cargar datos de prueba",
+          tooltip: l10n.cargarPrueba,
           onPressed: () async {
             bool? confirmar = await showDialog(
               context: context,
               builder: (context) => AlertDialog(
-                title: const Text("¿Cargar libros de prueba?"),
-                content: const Text("Esto añadirá 5 libros clásicos a tu lista."),
+                title: Text(l10n.cargarPrueba),
+                content: Text(l10n.cargarPruebaDesc),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context, false),
-                    child: const Text("Cancelar"),
+                    child:  Text(l10n.cancelar),
                   ),
                   FilledButton(
                     onPressed: () => Navigator.pop(context, true),
-                    child: const Text("Cargar"),
+                    child:  Text(l10n.cargar),
                   ),
                 ],
               ),
@@ -53,14 +57,51 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
             if (confirmar == true) {
               await libraryVM.addDatosDePrueba();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("¡Libros añadidos correctamente!")),
+                 SnackBar(content: Text(l10n.exitoCarga)),
               );
             }
           },
         ),
         
-        title: const Text("Librería"),
+        title: _isSearching
+            ? TextField(
+                controller: _searchController,
+                autofocus: true, 
+                style: const TextStyle(color: Colors.white),
+                cursorColor: Colors.white,
+                decoration: InputDecoration(
+                  hintText: l10n.buscar, 
+                  hintStyle: TextStyle(color: Colors.white70),
+                  border: InputBorder.none,
+                ),
+                onChanged: (value) {
+                  // Búsqueda en tiempo real
+                  libraryVM.setBusqueda(value);
+                },
+              )
+            : Text(l10n.libreria),
+        
+        
         actions: [
+
+          IconButton(
+            icon: Icon(_isSearching ? Icons.close : Icons.search, color: Colors.white),
+            onPressed: () {
+              setState(() {
+                if (_isSearching) {
+                  // Si actualmente está buscando, al hacer clic aquí se cerrará la ventana de búsqueda.
+                  _isSearching = false;
+                  _searchController.clear(); 
+                  libraryVM.setBusqueda(''); 
+                } else {
+                  // Habilitar el modo de búsqueda
+                  _isSearching = true;
+                }
+              });
+            },
+          ),
+
+          if (!_isSearching) ...[
           // Estado de filtrado para proveedores vinculados
           DropdownButton<String>(
             value: libraryVM.filtroEstado,
@@ -68,10 +109,10 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
             icon: const Icon(Icons.filter_list, color: Colors.white),
             style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             underline: Container(), 
-            items: const [
-              DropdownMenuItem(value: 'todos', child: Text('Todos')),
-              DropdownMenuItem(value: 'leido', child: Text('Leídos')),
-              DropdownMenuItem(value: 'pendiente', child: Text('Pendientes')),
+            items: [
+              DropdownMenuItem(value: 'todos', child: Text(l10n.todos)),
+              DropdownMenuItem(value: 'leido', child: Text(l10n.leidos)),
+              DropdownMenuItem(value: 'pendiente', child: Text(l10n.pendientes)),
             ],
             onChanged: (val) {
               if (val != null) libraryVM.setFiltroEstado(val);
@@ -86,9 +127,9 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
             icon: const Icon(Icons.favorite, color: Colors.redAccent), 
             style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             underline: Container(),
-            items: const [
-              DropdownMenuItem(value: 'todos', child: Text('Todos')),
-              DropdownMenuItem(value: 'favoritos', child: Text('Favoritos')),
+            items:  [
+              DropdownMenuItem(value: 'todos', child: Text(l10n.todos)),
+              DropdownMenuItem(value: 'favoritos', child: Text(l10n.favoritos)),
             ],
             onChanged: (val) {
               if (val != null) libraryVM.setFiltroFavorito(val);
@@ -96,10 +137,11 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
           ),
           
           const SizedBox(width: 15),
+          ]
         ],
       ),
       body: libros.isEmpty
-          ? const Center(child: Text("No hay libros"))
+          ? Center(child: Text(l10n.noHayLibros))
           : ListView.builder(
               itemCount: libros.length,
               itemBuilder: (context, index) {
@@ -127,17 +169,17 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
                         },
                       ),
                       const SizedBox(width: 10),
-                      // 状态下拉
+                      // Estado de extracción
                       DropdownButton<String>(
                         value: libro.leido == 1 ? 'leido' : 'pendiente',
-                        items: const [
+                        items: [
                           DropdownMenuItem(
                             value: 'pendiente',
-                            child: Text('Pendiente'),
+                            child: Text(l10n.pendienteSingular),
                           ),
                           DropdownMenuItem(
                             value: 'leido',
-                            child: Text('Leído'),
+                            child: Text(l10n.leidoSingular),
                           ),
                         ],
                         onChanged: (value) {
@@ -163,13 +205,16 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
             ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _mostrarFormulario(context, libraryVM),
-        icon: const Icon(Icons.add),
-        label: const Text("Añadir Libro"),
+        icon:  Icon(Icons.add),
+        label: Text(l10n.anadirLibro),
       ),
     );
   }
 
   void _mostrarFormulario(BuildContext context, LibraryViewModel vm) {
+
+    final l10n = AppLocalizations.of(context)!;
+
     final TextEditingController tituloController = TextEditingController();
     final TextEditingController autorController = TextEditingController();
     final TextEditingController portadaController = TextEditingController();
@@ -181,7 +226,7 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text("Añadir nuevo libro"),
+              title: Text(l10n.anadirLibro),
               content: SizedBox(
                 width: 400,
               child: SingleChildScrollView(
@@ -191,8 +236,8 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
                   // Entrada de título 
                     TextField(
                       controller: tituloController,
-                      decoration: const InputDecoration(
-                        labelText: "Título",
+                      decoration: InputDecoration(
+                        labelText: l10n.titulo,
                         prefixIcon: Icon(Icons.title),
                         border: OutlineInputBorder(),
                       ),
@@ -202,8 +247,8 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
                   // Entrada del autor
                     TextField(
                       controller: autorController,
-                      decoration: const InputDecoration(
-                        labelText: "Autor",
+                      decoration: InputDecoration(
+                        labelText: l10n.autor,
                         prefixIcon: Icon(Icons.person),
                         border: OutlineInputBorder(),
                       ),
@@ -213,8 +258,8 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
                     //  Ingrese el enlace de la portada (con oyente)
                     TextField(
                       controller: portadaController,
-                      decoration: const InputDecoration(
-                        labelText: "URL de Portada (Imagen)",
+                      decoration: InputDecoration(
+                        labelText: l10n.portadaUrl,
                         hintText: "https://ejemplo.com/foto.jpg",
                         prefixIcon: Icon(Icons.image),
                         border: OutlineInputBorder(),
@@ -232,8 +277,8 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
                     TextField(
                       controller: detalleController,
                       maxLines: 3, 
-                      decoration: const InputDecoration(
-                        labelText: "Detalle (Opcional)",
+                      decoration: InputDecoration(
+                        labelText: l10n.sinopsis,
                         alignLabelWithHint: true, 
                         prefixIcon: Icon(Icons.description),
                         border: OutlineInputBorder(),
@@ -276,7 +321,7 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("Cancelar"),
+                  child: Text(l10n.cancelar),
                 ),
                 FilledButton(
                   onPressed: () {
@@ -290,7 +335,7 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
                       Navigator.pop(context);
                     }
                   },
-                  child: const Text("Guardar"),
+                  child: Text(l10n.guardar),
                 ),
               ],
             );

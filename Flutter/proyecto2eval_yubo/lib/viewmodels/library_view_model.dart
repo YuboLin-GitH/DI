@@ -2,20 +2,37 @@ import 'package:flutter/material.dart';
 import '../models/libro_model.dart';
 import '../services/database_service.dart';
 
+
+
+
+/// ViewModel principal que gestiona la lógica de negocio de la librería.
+///
+/// Se encarga de comunicar la Vista con la Base de Datos, gestionando
+/// el estado de la lista de libros, los filtros y las búsquedas.
 class LibraryViewModel extends ChangeNotifier {
   List<Libro> _libros = [];
 
-  String _filtroEstado = 'todos';   // 选项: todos, leido, pendiente
-  String _filtroFavorito = 'todos'; // 选项: todos, favoritos
+  String _filtroEstado = 'todos';   // todos, leido, pendiente
+  String _filtroFavorito = 'todos'; //  todos, favoritos
 
+  String _busqueda = ''; 
+  String get busqueda => _busqueda;
+
+  /// Devuelve la lista completa de libros sin filtrar.
   List<Libro> get libros => _libros;
+
+  /// Devuelve el filtro de estado actual.
   String get filtroEstado => _filtroEstado;
+
+  /// Devuelve el filtro de favoritos actual.
   String get filtroFavorito => _filtroFavorito;
 
 
 
 
-// Obtener la lista después del filtrado
+  /// Devuelve la lista de libros filtrada según el estado, favoritos y búsqueda.
+  ///
+  /// Aplica lógica AND: deben cumplirse todas las condiciones.
   List<Libro> get librosFiltrados {
     return _libros.where((libro) {
       // Determinar el estado de lectura
@@ -32,8 +49,16 @@ class LibraryViewModel extends ChangeNotifier {
         coincideFavorito = (libro.gusta == 1);
       }
 
+      bool coincideBusqueda = true;
+      if (_busqueda.isNotEmpty) {
+        final query = _busqueda.toLowerCase(); // Convierte a minúsculas para lograr acceso indiscriminado entre mayúsculas y minúsculas.
+        coincideBusqueda = libro.titulo.toLowerCase().contains(query) ||
+                           libro.autor.toLowerCase().contains(query);
+      }
+
+
       //Este libro solo se mostrará si se cumplen ambas condiciones.
-      return coincideEstado && coincideFavorito;
+      return coincideEstado && coincideFavorito && coincideBusqueda;
     }).toList();
   }
 
@@ -56,6 +81,13 @@ class LibraryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Establece el texto de búsqueda y notifica a la vista.
+  void setBusqueda(String query) {
+    _busqueda = query;
+    notifyListeners();
+  }
+
+
   Future<void> loadLibros() async {
     final db = await DatabaseService().database;
     final List<Map<String, dynamic>> maps = await db.query('libro');
@@ -64,6 +96,7 @@ class LibraryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Añade un nuevo libro a la base de datos y recarga la lista.
   Future<void> addLibro(String titulo, String autor, String portada, String detalle) async {
     final db = await DatabaseService().database;
     final nuevoLibro = Libro(titulo: titulo, autor: autor, portada: portada, detalle: detalle);
@@ -100,6 +133,8 @@ class LibraryViewModel extends ChangeNotifier {
     );
     await loadLibros();
   }
+
+
 
 Future<void> addDatosDePrueba() async {
     final List<Map<String, String>> librosEjemplo = [

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:proyecto2eval_yubo/l10n/app_localizations.dart';
 import 'package:proyecto2eval_yubo/viewmodels/settings_view_model.dart';
 
 
@@ -18,11 +19,11 @@ class AjustesScreen extends StatefulWidget {
 class _AjustesScreenState extends State<AjustesScreen> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final settingsVM = context.watch<SettingsViewModel>();
-    final esOscuro = settingsVM.esOscuro;
     final currentScale = settingsVM.fontSize;
     return Scaffold(
-      appBar: AppBar(title: const Text("Ajustes")),
+      appBar: AppBar(title: Text(l10n.ajustes)),
       body: ListView(
         children: [
           Container(
@@ -40,7 +41,7 @@ class _AjustesScreenState extends State<AjustesScreen> {
             ),
             child: ListTile(
               leading: Icon(Icons.dark_mode),
-              title: Text("Tema Oscuro"),
+              title: Text(l10n.temaOscuro),
               trailing: Switch(
                 onChanged: (_) => context.read<SettingsViewModel>().toggleTheme(),
                 value: settingsVM.esOscuro,
@@ -63,8 +64,39 @@ class _AjustesScreenState extends State<AjustesScreen> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: ListTile(
+              leading: const Icon(Icons.language),
+              title: Text(l10n.idioma), // "Idioma"
+              trailing: DropdownButton<String>(
+                value: settingsVM.currentLocale.languageCode,
+                items: const [
+                  DropdownMenuItem(value: 'es', child: Text('Español')),
+                  DropdownMenuItem(value: 'zh', child: Text('中文')),
+                  DropdownMenuItem(value: 'en', child: Text('English')),
+                ],
+                onChanged: (val) {
+                  if (val != null) settingsVM.setLanguage(val);
+                },
+              ),
+            ),
+          ),
+
+
+          Container(
+            padding: EdgeInsets.all(5),
+            margin: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black,
+                  blurRadius: 1,
+                  blurStyle: BlurStyle.outer,
+                ),
+              ],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: ListTile(
               title: Text(
-                "Tamaño de texto: ${currentScale.toStringAsFixed(1)}",
+                " ${l10n.tamanoTexto}: ${currentScale.toStringAsFixed(1)}",
               ),
               subtitle: Slider(
                 min: 10,

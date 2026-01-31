@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:proyecto2eval_yubo/l10n/app_localizations.dart';
 import 'package:proyecto2eval_yubo/viewmodels/library_view_model.dart';
 import 'libro_detail_view.dart';
 
@@ -21,9 +22,10 @@ class _MisLibrosScreenState extends State<MisLibrosScreen> {
     // Obtener datos del proveedor
     final libraryVM = Provider.of<LibraryViewModel>(context);
     final libros = libraryVM.misLibros;
-
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
-      appBar: AppBar(title: const Text("Mis Libros")),
+      appBar: AppBar(title: Text(l10n.misLibros)),
     
       body: libros.isEmpty ? Center(
               child: Column(
@@ -32,10 +34,10 @@ class _MisLibrosScreenState extends State<MisLibrosScreen> {
 
                   Icon(Icons.favorite_border, size: 60, color: Colors.grey),
                   SizedBox(height: 16),
-                  Text("No hay libros en favoritos", 
+                  Text(l10n.noHayFavoritos, 
                     style: TextStyle(fontSize: 18, color: Colors.grey)),
                   SizedBox(height: 16),
-                  Text("Ve a visitar la librería.",
+                  Text(l10n.visitarLibreria,
                     style: TextStyle(fontSize: 18)),
                 ],
               ),
