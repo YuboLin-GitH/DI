@@ -64,9 +64,9 @@ class LibraryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addLibro(String titulo, String autor, String portada) async {
+  Future<void> addLibro(String titulo, String autor, String portada, String detalle) async {
     final db = await DatabaseService().database;
-    final nuevoLibro = Libro(titulo: titulo, autor: autor, portada: portada);
+    final nuevoLibro = Libro(titulo: titulo, autor: autor, portada: portada, detalle: detalle);
     await db.insert('libro', nuevoLibro.toMap()); 
     await loadLibros();
   }
@@ -100,4 +100,46 @@ class LibraryViewModel extends ChangeNotifier {
     );
     await loadLibros();
   }
+
+Future<void> addDatosDePrueba() async {
+    final List<Map<String, String>> librosEjemplo = [
+      {
+        "titulo": "EL JARDÍN DORMIDO",
+        "autor": "Carla Gracia",
+        "portada": "https://imagessl8.casadellibro.com/a/l/s7/78/9788467079678.webp",
+        "detalle":"Cada flor guarda un secreto. Cada jardín, una segunda oportunidad. Brillante, sensible y profundamente humana. Carla Gracia irrumpe en el panorama literario con una novela que cautiva los sentidos y deja una huella en el corazón."
+      },
+      {
+        "titulo": "EL PRIMER HOMBRE MALO",
+        "autor": "Miranda July",
+        "portada": "https://imagessl9.casadellibro.com/a/l/s7/09/9788466379809.webp",
+        "detalle":"Un debut novelístico deslumbrante que te desconcertará, por una de las voces más originales del panorama actual, un icono del indie americano: Miranda July."
+      },
+      {
+        "titulo": "LA TIERRA HERIDA",
+        "autor": "Clare Leslie Hall",
+        "portada": "https://imagessl7.casadellibro.com/a/l/s7/27/9788408309727.webp",
+        "detalle":"Un fenómeno internacional imparable en 35 países. «Apunta directamente al corazón y da en el blanco». Delia Owens, autora de La chica salvaje."
+      },
+      {
+        "titulo": "EL NOVIO",
+        "autor": "Freida McFadden",
+        "portada": "https://imagessl9.casadellibro.com/a/l/s7/19/9788410257719.webp",
+        "detalle":"La autora de La asistenta vuelve con una oscura historia sobre la obsesión y las cosas que hacemos por amor. Ella busca al hombre perfecto. Él busca a la víctima perfecta."
+      },
+      {
+        "titulo": "LA ÚLTIMA CANCIÓN DE AMOR",
+        "autor": "Lucinda Riley",
+        "portada": "https://imagessl6.casadellibro.com/a/l/s7/96/9788401027796.webp",
+        "detalle":"Una estrella del rock desaparecida y un misterio oculto durante dos décadas, en la nueva novela de la autora best seller de la saga Las Siete Hermanas."
+      },
+    ];
+
+    for (var libro in librosEjemplo) {
+      await addLibro(libro["titulo"]!, libro["autor"]!, libro["portada"]!, libro["detalle"] ?? "Sin descripción disponible.");
+    }
+    
+  }
+
+  
 }

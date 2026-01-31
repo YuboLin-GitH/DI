@@ -27,6 +27,37 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
 
     return Scaffold(
       appBar: AppBar(
+
+        leading: IconButton(
+          icon: const Icon(Icons.playlist_add_circle, color: Colors.white, size: 30),
+          tooltip: "Cargar datos de prueba",
+          onPressed: () async {
+            bool? confirmar = await showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text("¿Cargar libros de prueba?"),
+                content: const Text("Esto añadirá 5 libros clásicos a tu lista."),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text("Cancelar"),
+                  ),
+                  FilledButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text("Cargar"),
+                  ),
+                ],
+              ),
+            );
+
+            if (confirmar == true) {
+              await libraryVM.addDatosDePrueba();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("¡Libros añadidos correctamente!")),
+              );
+            }
+          },
+        ),
         
         title: const Text("Librería"),
         actions: [
@@ -65,7 +96,6 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
           ),
           
           const SizedBox(width: 15),
-
         ],
       ),
       body: libros.isEmpty
@@ -143,7 +173,7 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
     final TextEditingController tituloController = TextEditingController();
     final TextEditingController autorController = TextEditingController();
     final TextEditingController portadaController = TextEditingController();
-
+    final TextEditingController detalleController = TextEditingController();
 
     showDialog(
       context: context,
@@ -195,6 +225,21 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
                       },
                     ),
                     
+
+                    const SizedBox(height: 10),
+
+  
+                    TextField(
+                      controller: detalleController,
+                      maxLines: 3, 
+                      decoration: const InputDecoration(
+                        labelText: "Detalle (Opcional)",
+                        alignLabelWithHint: true, 
+                        prefixIcon: Icon(Icons.description),
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+
                     const SizedBox(height: 15),
 
                    // Área de vista previa de la imagen
@@ -239,7 +284,8 @@ class _LibreriaScreenState extends State<LibreriaScreen> {
                       vm.addLibro(
                         tituloController.text, 
                         autorController.text,
-                        portadaController.text //Enviar el enlace de la imagen
+                        portadaController.text, //Enviar el enlace de la imagen
+                        detalleController.text
                       );
                       Navigator.pop(context);
                     }

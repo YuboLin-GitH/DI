@@ -37,6 +37,7 @@ class DatabaseService {
             titulo TEXT NOT NULL,
             autor TEXT NOT NULL,
             portada TEXT,
+            detalle TEXT,
             leido INTEGER NOT NULL DEFAULT 0,
             gusta INTEGER NOT NULL DEFAULT 0
           )

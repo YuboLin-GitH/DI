@@ -3,6 +3,7 @@ class Libro {
   final String titulo;
   final String autor;
   final String portada;
+  final String detalle;
   final int leido; // 0: No, 1: Sí
   final int gusta; // 0: No, 1: Sí
 
@@ -11,6 +12,7 @@ class Libro {
     required this.titulo,
     required this.autor,
     this.portada = '',
+    this.detalle = '',
     this.leido = 0,
     this.gusta = 0,
   });
@@ -22,6 +24,7 @@ class Libro {
       titulo: map['titulo'],
       autor: map['autor'],
       portada: map['portada'] ?? '',
+      detalle: map['detalle'] ?? '',
       leido: map['leido'],
       gusta: map['gusta'],
     );
@@ -34,6 +37,7 @@ class Libro {
       'titulo': titulo,
       'autor': autor,
       'portada': portada,
+      'detalle': detalle,
       'leido': leido,
       'gusta': gusta,
     };
